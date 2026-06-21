@@ -1,4 +1,4 @@
-const CACHE_NAME = "keto-tracker-pwa-v3";
+const CACHE_NAME = "keto-tracker-pwa-v4";
 const APP_SHELL = [
   "./",
   "keto-diet-tracker.html",

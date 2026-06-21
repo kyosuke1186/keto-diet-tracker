@@ -975,6 +975,7 @@
       } catch {
         state.sync = { url: "", token: "", lastPulledAt: "", lastPushedAt: "", pending: false };
       }
+      applySyncParams();
 
       el.height.value = state.settings.height;
       el.carbGoal.value = state.settings.carbGoal;
@@ -985,6 +986,22 @@
       el.weightDate.value = todayIso();
       el.todayLabel.textContent = new Date().toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric", weekday: "long" });
       renderSyncStatus();
+    }
+
+    function applySyncParams() {
+      const params = new URLSearchParams(window.location.search);
+      const url = params.get("syncUrl");
+      const token = params.get("syncToken");
+      if (!url && !token) return;
+      if (url) state.sync.url = url;
+      if (token) state.sync.token = token;
+      localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(state.sync));
+      const cleanUrl = `${window.location.origin}${window.location.pathname}`;
+      window.history.replaceState({}, document.title, cleanUrl);
+      window.setTimeout(() => {
+        renderSyncStatus();
+        showToast("同期設定を保存しました");
+      }, 500);
     }
 
     function save() {
