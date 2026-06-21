@@ -1,4 +1,5 @@
 const SPREADSHEET_ID = "1b5LpA47wX5r5B9sIIaUxwFD9pEi9YUZxRVP90kbQ5V8";
+const SYNC_TOKEN = "PASTE_YOUR_SYNC_KEY_HERE";
 
 const SHEETS = {
   meta: "meta",
@@ -9,23 +10,23 @@ const SHEETS = {
 };
 
 function doGet(e) {
+  if (!isAuthorized_(e.parameter.token)) {
+    return jsonp_(e.parameter.callback || "", { ok: false, error: "Invalid sync token" });
+  }
   const action = (e.parameter.action || "load").toLowerCase();
   const callback = e.parameter.callback || "";
   const result = action === "load"
     ? { ok: true, data: loadData_(), updatedAt: new Date().toISOString() }
     : { ok: false, error: "Unknown action" };
 
-  const body = callback
-    ? `${callback}(${JSON.stringify(result)});`
-    : JSON.stringify(result);
-
-  return ContentService
-    .createTextOutput(body)
-    .setMimeType(callback ? ContentService.MimeType.JAVASCRIPT : ContentService.MimeType.JSON);
+  return jsonp_(callback, result);
 }
 
 function doPost(e) {
   try {
+    if (!isAuthorized_(e.parameter.token)) {
+      return json_({ ok: false, error: "Invalid sync token" });
+    }
     const payload = e.parameter.payload || (e.postData && e.postData.contents) || "{}";
     saveData_(JSON.parse(payload));
     return json_({ ok: true, updatedAt: new Date().toISOString() });
@@ -213,4 +214,17 @@ function json_(payload) {
   return ContentService
     .createTextOutput(JSON.stringify(payload))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function jsonp_(callback, payload) {
+  const body = callback
+    ? `${callback}(${JSON.stringify(payload)});`
+    : JSON.stringify(payload);
+  return ContentService
+    .createTextOutput(body)
+    .setMimeType(callback ? ContentService.MimeType.JAVASCRIPT : ContentService.MimeType.JSON);
+}
+
+function isAuthorized_(token) {
+  return String(token || "") === SYNC_TOKEN;
 }

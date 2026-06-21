@@ -637,6 +637,10 @@
             <label for="syncUrlInput">Google同期URL</label>
             <input id="syncUrlInput" type="url" inputmode="url" placeholder="Apps ScriptのウェブアプリURL">
           </div>
+          <div class="field">
+            <label for="syncTokenInput">同期キー</label>
+            <input id="syncTokenInput" type="password" autocomplete="off" placeholder="同期用の合言葉">
+          </div>
           <div class="btn-row">
             <button id="saveSyncBtn" class="btn btn-ghost" type="button">URL保存</button>
             <button id="pullSyncBtn" class="btn btn-ghost" type="button">読み込み</button>
@@ -835,6 +839,7 @@
       templates: {},
       sync: {
         url: "",
+        token: "",
         lastPulledAt: "",
         lastPushedAt: "",
         pending: false
@@ -915,6 +920,7 @@
       sampleBtn: document.getElementById("sampleBtn"),
       clearBtn: document.getElementById("clearBtn"),
       syncUrl: document.getElementById("syncUrlInput"),
+      syncToken: document.getElementById("syncTokenInput"),
       saveSync: document.getElementById("saveSyncBtn"),
       pullSync: document.getElementById("pullSyncBtn"),
       pushSync: document.getElementById("pushSyncBtn"),
@@ -967,7 +973,7 @@
       try {
         Object.assign(state.sync, JSON.parse(localStorage.getItem(SYNC_STORAGE_KEY) || "{}"));
       } catch {
-        state.sync = { url: "", lastPulledAt: "", lastPushedAt: "", pending: false };
+        state.sync = { url: "", token: "", lastPulledAt: "", lastPushedAt: "", pending: false };
       }
 
       el.height.value = state.settings.height;
@@ -975,6 +981,7 @@
       el.startWeight.value = state.settings.startWeight;
       el.goalWeight.value = state.settings.goalWeight;
       el.syncUrl.value = state.sync.url || "";
+      el.syncToken.value = state.sync.token || "";
       el.weightDate.value = todayIso();
       el.todayLabel.textContent = new Date().toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric", weekday: "long" });
       renderSyncStatus();
@@ -1041,6 +1048,10 @@
       return String(state.sync.url || "").trim();
     }
 
+    function syncToken() {
+      return String(state.sync.token || "").trim();
+    }
+
     function queueAutoSync() {
       if (!syncUrl()) return;
       window.clearTimeout(queueAutoSync.timer);
@@ -1078,7 +1089,7 @@
       state.sync.pending = true;
       renderSyncStatus();
       try {
-        const response = await jsonp(`${url}?action=load`);
+        const response = await jsonp(`${url}?action=load&token=${encodeURIComponent(syncToken())}`);
         if (!response || !response.ok) throw new Error(response && response.error ? response.error : "読み込みに失敗しました");
         applyAppData(response.data || {});
         state.sync.lastPulledAt = new Date().toISOString();
@@ -1104,6 +1115,7 @@
       renderSyncStatus();
       const form = new FormData();
       form.append("payload", JSON.stringify(getAppData()));
+      form.append("token", syncToken());
       try {
         await fetch(url, { method: "POST", body: form, mode: "no-cors" });
         state.sync.lastPushedAt = new Date().toISOString();
@@ -1677,9 +1689,10 @@
 
     el.saveSync.addEventListener("click", () => {
       state.sync.url = el.syncUrl.value.trim();
+      state.sync.token = el.syncToken.value.trim();
       saveLocalOnly();
       renderSyncStatus();
-      showToast(state.sync.url ? "同期URLを保存しました" : "同期URLを解除しました");
+      showToast(state.sync.url ? "同期設定を保存しました" : "同期URLを解除しました");
     });
 
     el.pullSync.addEventListener("click", pullSync);
