@@ -1,0 +1,32 @@
+{
+  "name": "ケト管理",
+  "short_name": "ケト管理",
+  "description": "食事の自然文入力、糖質管理、ケト判定、体重推移をまとめて見られるローカル保存アプリです。",
+  "lang": "ja",
+  "start_url": "keto-diet-tracker.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f6f1",
+  "theme_color": "#16705a",
+  "icons": [
+    {
+      "src": "keto-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "keto-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "keto-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
