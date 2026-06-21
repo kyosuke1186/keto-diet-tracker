@@ -181,6 +181,22 @@
       gap: 8px;
     }
 
+    .sync-status {
+      display: grid;
+      gap: 4px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #f7faf7;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .sync-status strong {
+      color: var(--ink);
+      font-size: 13px;
+    }
+
     .btn-row {
       display: flex;
       flex-wrap: wrap;
@@ -614,6 +630,27 @@
 
       <section class="panel">
         <div class="panel-head">
+          <h3>同期</h3>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label for="syncUrlInput">Google同期URL</label>
+            <input id="syncUrlInput" type="url" inputmode="url" placeholder="Apps ScriptのウェブアプリURL">
+          </div>
+          <div class="btn-row">
+            <button id="saveSyncBtn" class="btn btn-ghost" type="button">URL保存</button>
+            <button id="pullSyncBtn" class="btn btn-ghost" type="button">読み込み</button>
+            <button id="pushSyncBtn" class="btn btn-primary" type="button">同期</button>
+          </div>
+          <div class="sync-status">
+            <strong id="syncStatusLabel">未設定</strong>
+            <span id="syncStatusDetail">Google Apps ScriptのURLを設定すると、iPhoneとPCで同じデータになります。</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
           <h3>体重記録</h3>
         </div>
         <div class="panel-body">
@@ -781,6 +818,7 @@
 
   <script>
     const STORAGE_KEY = "keto-tracker-state-v1";
+    const SYNC_STORAGE_KEY = "keto-tracker-sync-v1";
     const MEAL_LABELS = { breakfast: "朝", lunch: "昼", dinner: "夜", snack: "間食" };
     const SLOT_LABELS = { morning: "朝", evening: "夜" };
     const RANGE_LABELS = { "7": 7, "30": 30, all: null };
@@ -795,6 +833,12 @@
       meals: [],
       weights: [],
       templates: {},
+      sync: {
+        url: "",
+        lastPulledAt: "",
+        lastPushedAt: "",
+        pending: false
+      },
       draft: [],
       range: "30"
     };
@@ -870,6 +914,12 @@
       importInput: document.getElementById("importInput"),
       sampleBtn: document.getElementById("sampleBtn"),
       clearBtn: document.getElementById("clearBtn"),
+      syncUrl: document.getElementById("syncUrlInput"),
+      saveSync: document.getElementById("saveSyncBtn"),
+      pullSync: document.getElementById("pullSyncBtn"),
+      pushSync: document.getElementById("pushSyncBtn"),
+      syncStatusLabel: document.getElementById("syncStatusLabel"),
+      syncStatusDetail: document.getElementById("syncStatusDetail"),
       todayLabel: document.getElementById("todayLabel"),
       toast: document.getElementById("toast")
     };
@@ -914,13 +964,20 @@
         state.weights = [];
         state.templates = {};
       }
+      try {
+        Object.assign(state.sync, JSON.parse(localStorage.getItem(SYNC_STORAGE_KEY) || "{}"));
+      } catch {
+        state.sync = { url: "", lastPulledAt: "", lastPushedAt: "", pending: false };
+      }
 
       el.height.value = state.settings.height;
       el.carbGoal.value = state.settings.carbGoal;
       el.startWeight.value = state.settings.startWeight;
       el.goalWeight.value = state.settings.goalWeight;
+      el.syncUrl.value = state.sync.url || "";
       el.weightDate.value = todayIso();
       el.todayLabel.textContent = new Date().toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric", weekday: "long" });
+      renderSyncStatus();
     }
 
     function save() {
@@ -930,6 +987,35 @@
         weights: state.weights,
         templates: state.templates
       }));
+      localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(state.sync));
+      queueAutoSync();
+    }
+
+    function saveLocalOnly() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(getAppData()));
+      localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(state.sync));
+    }
+
+    function getAppData() {
+      return {
+        settings: state.settings,
+        meals: state.meals,
+        weights: state.weights,
+        templates: state.templates
+      };
+    }
+
+    function applyAppData(data) {
+      Object.assign(state.settings, data.settings || {});
+      state.meals = Array.isArray(data.meals) ? data.meals : [];
+      state.weights = Array.isArray(data.weights) ? data.weights : [];
+      state.templates = data.templates || {};
+      el.height.value = state.settings.height;
+      el.carbGoal.value = state.settings.carbGoal;
+      el.startWeight.value = state.settings.startWeight;
+      el.goalWeight.value = state.settings.goalWeight;
+      saveLocalOnly();
+      render();
     }
 
     function showToast(message) {
@@ -937,6 +1023,100 @@
       el.toast.classList.add("show");
       window.clearTimeout(showToast.timer);
       showToast.timer = window.setTimeout(() => el.toast.classList.remove("show"), 1800);
+    }
+
+    function renderSyncStatus() {
+      if (!state.sync.url) {
+        el.syncStatusLabel.textContent = "未設定";
+        el.syncStatusDetail.textContent = "Google Apps ScriptのURLを設定すると、iPhoneとPCで同じデータになります。";
+        return;
+      }
+      const pushed = state.sync.lastPushedAt ? new Date(state.sync.lastPushedAt).toLocaleString("ja-JP") : "未実行";
+      const pulled = state.sync.lastPulledAt ? new Date(state.sync.lastPulledAt).toLocaleString("ja-JP") : "未実行";
+      el.syncStatusLabel.textContent = state.sync.pending ? "同期中" : "同期設定済み";
+      el.syncStatusDetail.textContent = `最終同期: 送信 ${pushed} / 読込 ${pulled}`;
+    }
+
+    function syncUrl() {
+      return String(state.sync.url || "").trim();
+    }
+
+    function queueAutoSync() {
+      if (!syncUrl()) return;
+      window.clearTimeout(queueAutoSync.timer);
+      queueAutoSync.timer = window.setTimeout(() => pushSync(true), 900);
+    }
+
+    function jsonp(url) {
+      return new Promise((resolve, reject) => {
+        const callback = `ketoSync${Date.now()}${Math.floor(Math.random() * 100000)}`;
+        const script = document.createElement("script");
+        const cleanup = () => {
+          delete window[callback];
+          script.remove();
+        };
+        window[callback] = (payload) => {
+          cleanup();
+          resolve(payload);
+        };
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("同期URLへ接続できませんでした"));
+        };
+        const separator = url.includes("?") ? "&" : "?";
+        script.src = `${url}${separator}callback=${encodeURIComponent(callback)}&t=${Date.now()}`;
+        document.body.appendChild(script);
+      });
+    }
+
+    async function pullSync() {
+      const url = syncUrl();
+      if (!url) {
+        showToast("同期URLを設定してください");
+        return;
+      }
+      state.sync.pending = true;
+      renderSyncStatus();
+      try {
+        const response = await jsonp(`${url}?action=load`);
+        if (!response || !response.ok) throw new Error(response && response.error ? response.error : "読み込みに失敗しました");
+        applyAppData(response.data || {});
+        state.sync.lastPulledAt = new Date().toISOString();
+        state.sync.pending = false;
+        saveLocalOnly();
+        renderSyncStatus();
+        showToast("Googleから読み込みました");
+      } catch (error) {
+        state.sync.pending = false;
+        saveLocalOnly();
+        renderSyncStatus();
+        showToast(error.message || "同期できませんでした");
+      }
+    }
+
+    async function pushSync(silent = false) {
+      const url = syncUrl();
+      if (!url) {
+        if (!silent) showToast("同期URLを設定してください");
+        return;
+      }
+      state.sync.pending = true;
+      renderSyncStatus();
+      const form = new FormData();
+      form.append("payload", JSON.stringify(getAppData()));
+      try {
+        await fetch(url, { method: "POST", body: form, mode: "no-cors" });
+        state.sync.lastPushedAt = new Date().toISOString();
+        state.sync.pending = false;
+        saveLocalOnly();
+        renderSyncStatus();
+        if (!silent) showToast("Googleへ同期しました");
+      } catch {
+        state.sync.pending = false;
+        saveLocalOnly();
+        renderSyncStatus();
+        if (!silent) showToast("Googleへ同期できませんでした");
+      }
     }
 
     function estimateMeal(text) {
@@ -1494,6 +1674,16 @@
       render();
       showToast("設定を保存しました");
     });
+
+    el.saveSync.addEventListener("click", () => {
+      state.sync.url = el.syncUrl.value.trim();
+      saveLocalOnly();
+      renderSyncStatus();
+      showToast(state.sync.url ? "同期URLを保存しました" : "同期URLを解除しました");
+    });
+
+    el.pullSync.addEventListener("click", pullSync);
+    el.pushSync.addEventListener("click", () => pushSync(false));
 
     document.querySelectorAll("[data-range]").forEach((button) => {
       button.addEventListener("click", () => {
