@@ -8,7 +8,9 @@ const hostedServerFunctions = `function doGet(e) {
       : { ok: false, error: "Unknown action" };
     return jsonp_(e.parameter.callback || "", result);
   }
-  return HtmlService.createHtmlOutput(APP_HTML)
+  const bootstrap = JSON.stringify(JSON.stringify(loadData_()));
+  const html = APP_HTML.replace('"__SERVER_BOOTSTRAP__"', bootstrap);
+  return HtmlService.createHtmlOutput(html)
     .setTitle("体重管理")
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
@@ -59,12 +61,11 @@ const hostedSyncFunctions = `    function syncUrl() {
             .withFailureHandler(reject)
             .loadDataForClient();
         });
-        applyAppData(mergeAppData(data || {}));
+        applyAppData(data || {});
         state.sync.lastPulledAt = new Date().toISOString();
         state.sync.pending = false;
         saveLocalOnly();
         renderSyncStatus();
-        pushSync(true);
         showToast("Googleから読み込みました");
       } catch (error) {
         state.sync.pending = false;
@@ -89,11 +90,13 @@ const hostedSyncFunctions = `    function syncUrl() {
         saveLocalOnly();
         renderSyncStatus();
         if (!silent) showToast("Googleへ同期しました");
+        return true;
       } catch (error) {
         state.sync.pending = false;
         saveLocalOnly();
         renderSyncStatus();
         if (!silent) showToast(error && error.message ? error.message : "Googleへ同期できませんでした");
+        return false;
       }
     }
 
@@ -116,7 +119,7 @@ if (syncStart < 0 || syncEnd < 0 || syncEnd <= syncStart) {
 html = `${html.slice(0, syncStart)}${hostedSyncFunctions}${html.slice(syncEnd)}`;
 html = html.replace(
   /\n    if \("serviceWorker" in navigator\) \{[\s\S]*?    \}\n\n    load\(\);\n    render\(\);/,
-  "\n    load();\n    render();\n    window.setTimeout(() => pullSync(), 800);"
+  "\n    load();\n    render();"
 );
 
 writeFileSync("Code-hosted.gs", `${server}\nconst APP_HTML = ${JSON.stringify(html)};\n`);
