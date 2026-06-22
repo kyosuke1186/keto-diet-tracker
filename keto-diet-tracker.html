@@ -3,32 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#16705a">
+  <meta name="theme-color" content="#146c78">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="ケト管理">
+  <meta name="apple-mobile-web-app-title" content="体重管理">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="manifest" href="keto-manifest.webmanifest">
   <link rel="icon" href="keto-icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="keto-icon-192.png">
-  <title>ケト管理</title>
+  <title>体重管理</title>
   <style>
     * { box-sizing: border-box; }
 
     :root {
-      --bg: #f4f6f1;
-      --surface: #fff;
-      --ink: #172426;
-      --muted: #667474;
-      --line: #dbe2dc;
-      --green: #16705a;
-      --green-dark: #0e5846;
-      --mint: #dff2e8;
-      --blue: #2f6f9f;
-      --amber: #c68121;
-      --red: #b94d48;
-      --violet: #7460aa;
-      --shadow: 0 10px 28px rgba(23, 36, 38, 0.08);
+      --bg: #f5f7f4;
+      --surface: #ffffff;
+      --ink: #162225;
+      --muted: #687577;
+      --line: #dce4df;
+      --teal: #146c78;
+      --teal-dark: #0d5560;
+      --green: #2d7a4f;
+      --blue: #326ea8;
+      --amber: #b7781c;
+      --red: #b74b46;
+      --soft: #e7f3f2;
+      --shadow: 0 10px 28px rgba(22, 34, 37, 0.08);
       --radius: 8px;
     }
 
@@ -36,31 +36,30 @@
       margin: 0;
       color: var(--ink);
       background:
-        linear-gradient(180deg, rgba(244, 246, 241, 0.96), rgba(244, 246, 241, 1)),
-        repeating-linear-gradient(90deg, rgba(22, 112, 90, 0.05) 0 1px, transparent 1px 76px);
+        linear-gradient(180deg, rgba(245, 247, 244, 0.96), rgba(245, 247, 244, 1)),
+        repeating-linear-gradient(90deg, rgba(20, 108, 120, 0.05) 0 1px, transparent 1px 78px);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
       font-size: 14px;
       line-height: 1.5;
     }
 
-    button, input, textarea, select { font: inherit; }
+    button, input, select, textarea { font: inherit; }
     button { cursor: pointer; }
 
     .app {
-      height: 100vh;
+      min-height: 100vh;
       display: grid;
-      grid-template-columns: 300px minmax(0, 1fr);
-      overflow: hidden;
+      grid-template-columns: 320px minmax(0, 1fr);
     }
 
     aside {
+      height: 100vh;
       position: sticky;
       top: 0;
-      height: 100vh;
       overflow-y: auto;
       overscroll-behavior: contain;
-      background: rgba(255, 255, 255, 0.82);
       border-right: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.84);
       padding: 18px;
       display: grid;
       align-content: start;
@@ -77,11 +76,20 @@
       gap: 14px;
     }
 
+    h1, h2, h3 {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h1 { font-size: 21px; }
+    h2 { font-size: 22px; }
+    h3 { font-size: 15px; }
+
     .brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding-bottom: 12px;
+      padding-bottom: 13px;
       border-bottom: 1px solid var(--line);
     }
 
@@ -89,23 +97,14 @@
       width: 44px;
       height: 44px;
       border-radius: 8px;
-      background: linear-gradient(135deg, var(--green), var(--blue));
-      color: white;
       display: grid;
       place-items: center;
-      font-weight: 900;
+      color: #fff;
+      background: linear-gradient(135deg, var(--teal), var(--blue));
       font-size: 18px;
+      font-weight: 900;
       box-shadow: inset 0 -10px 18px rgba(0, 0, 0, 0.12);
     }
-
-    h1, h2, h3 {
-      margin: 0;
-      letter-spacing: 0;
-    }
-
-    h1 { font-size: 20px; }
-    h2 { font-size: 22px; }
-    h3 { font-size: 15px; }
 
     .mini-note,
     .brand p {
@@ -115,11 +114,11 @@
     }
 
     .panel,
-    .hero-card,
-    .metric-card {
-      background: var(--surface);
+    .metric-card,
+    .hero {
       border: 1px solid var(--line);
       border-radius: var(--radius);
+      background: var(--surface);
       box-shadow: var(--shadow);
     }
 
@@ -140,11 +139,6 @@
       gap: 12px;
     }
 
-    .form-stack {
-      display: grid;
-      gap: 10px;
-    }
-
     .field {
       display: grid;
       gap: 5px;
@@ -156,34 +150,75 @@
       font-weight: 800;
     }
 
-    input,
-    textarea,
-    select {
+    input, select, textarea {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 6px;
-      background: white;
+      background: #fff;
       color: var(--ink);
       padding: 10px 11px;
       outline: none;
     }
 
     textarea {
-      min-height: 104px;
+      min-height: 74px;
       resize: vertical;
     }
 
     input:focus,
-    textarea:focus,
-    select:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(22, 112, 90, 0.14);
+    select:focus,
+    textarea:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(20, 108, 120, 0.14);
     }
 
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
       gap: 8px;
+    }
+
+    .btn {
+      min-height: 40px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 8px 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: var(--teal);
+    }
+
+    .btn-primary:hover { background: var(--teal-dark); }
+
+    .btn-ghost {
+      color: var(--ink);
+      background: #fff;
+      border-color: var(--line);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--teal);
+      color: var(--teal-dark);
+    }
+
+    .btn-danger {
+      color: var(--red);
+      background: #fff7f6;
+      border-color: #efc8c4;
     }
 
     .sync-status {
@@ -202,125 +237,52 @@
       font-size: 13px;
     }
 
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .btn {
-      border: 1px solid transparent;
-      border-radius: 6px;
-      min-height: 40px;
-      padding: 8px 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .btn-primary {
-      color: white;
-      background: var(--green);
-    }
-
-    .btn-primary:hover { background: var(--green-dark); }
-
-    .btn-ghost {
-      background: white;
-      color: var(--ink);
-      border-color: var(--line);
-    }
-
-    .btn-ghost:hover {
-      border-color: var(--green);
-      color: var(--green-dark);
-    }
-
-    .btn-danger {
-      color: var(--red);
-      background: #fff7f6;
-      border-color: #efc8c4;
-    }
-
-    .top-input {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 170px;
-      gap: 12px;
-      align-items: stretch;
-    }
-
-    .top-input textarea {
-      min-height: 118px;
-      font-size: 16px;
-    }
-
-    .input-actions {
-      display: grid;
-      gap: 8px;
-    }
-
-    .input-actions .btn {
-      min-height: 55px;
-    }
-
-    .hero-card {
+    .hero {
       padding: 18px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(240px, 0.55fr);
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 0.58fr);
       gap: 16px;
       align-items: center;
       background:
-        linear-gradient(135deg, #ffffff 0%, #f4faf6 56%, #eef5fa 100%);
+        linear-gradient(135deg, #ffffff 0%, #f2faf9 58%, #eef5fb 100%);
     }
 
-    .remaining {
+    .current-block {
       display: grid;
       gap: 8px;
     }
 
-    .remaining-label {
+    .current-label {
       color: var(--muted);
       font-size: 13px;
       font-weight: 800;
     }
 
-    .remaining-number {
-      font-size: 52px;
+    .current-number {
+      font-size: 56px;
       line-height: 0.95;
       font-weight: 900;
       letter-spacing: 0;
     }
 
-    .remaining-number small {
-      font-size: 18px;
+    .current-number small {
+      font-size: 19px;
       color: var(--muted);
       font-weight: 800;
     }
 
-    .keto-pill {
+    .status-pill {
       width: fit-content;
       border-radius: 999px;
       padding: 7px 12px;
+      color: var(--teal-dark);
+      background: var(--soft);
       font-weight: 900;
-      background: var(--mint);
-      color: var(--green-dark);
-    }
-
-    .keto-pill.ok { background: #e8f6df; color: #396c20; }
-    .keto-pill.warn { background: #fff1d7; color: #8b5b13; }
-    .keto-pill.bad { background: #ffe5e2; color: #9a302b; }
-
-    .hero-side {
-      display: grid;
-      gap: 8px;
     }
 
     .meter {
-      height: 12px;
-      background: #e5ebe6;
+      height: 13px;
+      background: #e4ebe7;
       border-radius: 999px;
       overflow: hidden;
     }
@@ -328,8 +290,8 @@
     .meter-fill {
       height: 100%;
       width: 0%;
+      background: var(--teal);
       border-radius: 999px;
-      background: var(--green);
       transition: width 0.2s ease;
     }
 
@@ -340,8 +302,8 @@
     }
 
     .metric-card {
-      padding: 13px;
       min-height: 96px;
+      padding: 13px;
       display: grid;
       align-content: space-between;
       gap: 8px;
@@ -360,105 +322,37 @@
 
     .content-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+      grid-template-columns: minmax(0, 1fr) minmax(330px, 0.9fr);
       gap: 14px;
       align-items: start;
     }
 
-    .draft-list,
-    .meal-list,
-    .template-list,
-    .suggestion-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .draft-item,
-    .meal-item,
-    .template-item,
-    .suggestion-item {
+    .range-control {
+      display: inline-flex;
       border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 11px;
-      background: #fbfcfa;
-      display: grid;
-      gap: 9px;
+      background: #fff;
+      padding: 3px;
     }
 
-    .item-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .item-title {
-      font-weight: 900;
-    }
-
-    .tag {
-      border-radius: 999px;
-      padding: 3px 8px;
-      font-size: 11px;
-      font-weight: 900;
-      background: #eef4f1;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    .tag.high { background: #dff2e8; color: var(--green-dark); }
-    .tag.medium { background: #fff1d7; color: #8b5b13; }
-    .tag.low { background: #ffe5e2; color: #9a302b; }
-
-    .macro-row {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 7px;
-    }
-
-    .macro-field {
-      display: grid;
-      gap: 4px;
-    }
-
-    .macro-field label {
-      font-size: 10px;
-    }
-
-    .macro-field input {
-      padding: 7px 8px;
-      text-align: right;
-    }
-
-    .item-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .icon-btn {
-      width: 34px;
-      height: 34px;
+    .range-control button {
+      min-width: 48px;
+      border: 0;
       border-radius: 6px;
-      border: 1px solid var(--line);
-      background: white;
+      padding: 7px 9px;
       color: var(--muted);
-      display: inline-grid;
-      place-items: center;
-      font-weight: 900;
+      background: transparent;
+      font-weight: 800;
     }
 
-    .icon-btn:hover {
-      color: var(--red);
-      border-color: #efc8c4;
-      background: #fff7f6;
+    .range-control button.active {
+      color: #fff;
+      background: var(--ink);
     }
 
     .chart-wrap {
       width: 100%;
-      height: 330px;
+      height: 360px;
       position: relative;
     }
 
@@ -468,43 +362,19 @@
       height: 100%;
     }
 
-    .range-control {
-      display: inline-flex;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: white;
-      padding: 3px;
-    }
-
-    .range-control button {
-      border: 0;
-      border-radius: 6px;
-      background: transparent;
-      color: var(--muted);
-      min-width: 46px;
-      padding: 7px 9px;
-      font-weight: 800;
-    }
-
-    .range-control button.active {
-      background: var(--ink);
-      color: white;
-    }
-
     .table-wrap {
       overflow-x: auto;
-      max-height: 420px;
+      max-height: 460px;
     }
 
     table {
       width: 100%;
-      min-width: 760px;
+      min-width: 640px;
       border-collapse: collapse;
       font-size: 13px;
     }
 
-    th,
-    td {
+    th, td {
       border-bottom: 1px solid var(--line);
       padding: 9px 10px;
       text-align: left;
@@ -515,8 +385,8 @@
       position: sticky;
       top: 0;
       z-index: 1;
-      background: #f8faf6;
       color: var(--muted);
+      background: #f8faf6;
       font-size: 12px;
     }
 
@@ -524,6 +394,11 @@
       text-align: right;
       white-space: nowrap;
     }
+
+    .good { color: var(--green); }
+    .warn { color: var(--amber); }
+    .bad { color: var(--red); }
+    .blue { color: var(--blue); }
 
     .empty {
       border: 1px dashed var(--line);
@@ -534,25 +409,20 @@
       background: #fbfcfa;
     }
 
-    .good { color: var(--green); }
-    .warn { color: var(--amber); }
-    .bad { color: var(--red); }
-    .blue { color: var(--blue); }
-
     .toast {
       position: fixed;
       left: 50%;
       bottom: 18px;
+      z-index: 20;
       transform: translateX(-50%) translateY(16px);
       opacity: 0;
       pointer-events: none;
-      background: var(--ink);
-      color: white;
       border-radius: 8px;
       padding: 10px 14px;
+      color: #fff;
+      background: var(--ink);
       box-shadow: var(--shadow);
       transition: opacity 0.18s ease, transform 0.18s ease;
-      z-index: 20;
     }
 
     .toast.show {
@@ -560,13 +430,12 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    @media (max-width: 1050px) {
+    @media (max-width: 1040px) {
       .app {
-        min-height: 100vh;
         height: auto;
         grid-template-columns: 1fr;
-        overflow: visible;
       }
+
       aside {
         position: static;
         height: auto;
@@ -574,33 +443,33 @@
         border-right: 0;
         border-bottom: 1px solid var(--line);
       }
+
       main {
         height: auto;
         overflow: visible;
       }
-      .content-grid { grid-template-columns: 1fr; }
-      .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+      .content-grid,
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 680px) {
       main, aside { padding: 14px; }
-      .top-input,
-      .hero-card,
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
-      .input-actions {
+
+      .current-number { font-size: 48px; }
+
+      .grid-2,
+      .metric-grid {
         grid-template-columns: 1fr 1fr;
       }
-      .input-actions .btn {
-        min-height: 44px;
-      }
-      .remaining-number { font-size: 46px; }
-      .metric-grid,
-      .macro-row {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .chart-wrap { height: 295px; }
+
+      .chart-wrap { height: 310px; }
     }
   </style>
 </head>
@@ -608,69 +477,16 @@
   <div class="app">
     <aside>
       <div class="brand">
-        <div class="brand-mark">K</div>
+        <div class="brand-mark">W</div>
         <div>
-          <h1>ケト管理</h1>
-          <p>食事・糖質・体重を1日単位で見る</p>
+          <h1>体重管理</h1>
+          <p>体重だけを毎日シンプルに見る</p>
         </div>
       </div>
 
       <section class="panel">
         <div class="panel-head">
-          <h3>ユーザー設定</h3>
-        </div>
-        <div class="panel-body">
-          <div class="grid-2">
-            <div class="field">
-              <label for="heightInput">身長 cm</label>
-              <input id="heightInput" type="number" step="0.1" min="100" max="230">
-            </div>
-            <div class="field">
-              <label for="carbGoalInput">糖質上限 g</label>
-              <input id="carbGoalInput" type="number" step="1" min="5" max="120">
-            </div>
-            <div class="field">
-              <label for="startWeightInput">開始体重 kg</label>
-              <input id="startWeightInput" type="number" step="0.1" min="30" max="250">
-            </div>
-            <div class="field">
-              <label for="goalWeightInput">目標体重 kg</label>
-              <input id="goalWeightInput" type="number" step="0.1" min="30" max="250">
-            </div>
-          </div>
-          <button id="saveSettingsBtn" class="btn btn-ghost" type="button">設定を保存</button>
-          <p class="mini-note">初期値: 174cm / 85kg開始 / 70kg目標 / 糖質30g以下</p>
-        </div>
-      </section>
-
-      <section class="panel" hidden>
-        <div class="panel-head">
-          <h3>同期</h3>
-        </div>
-        <div class="panel-body">
-          <div class="field">
-            <label for="syncUrlInput">Google同期URL</label>
-            <input id="syncUrlInput" type="url" inputmode="url" placeholder="Apps ScriptのウェブアプリURL">
-          </div>
-          <div class="field">
-            <label for="syncTokenInput">同期キー</label>
-            <input id="syncTokenInput" type="password" autocomplete="off" placeholder="同期用の合言葉">
-          </div>
-          <div class="btn-row">
-            <button id="saveSyncBtn" class="btn btn-ghost" type="button">URL保存</button>
-            <button id="pullSyncBtn" class="btn btn-ghost" type="button">読み込み</button>
-            <button id="pushSyncBtn" class="btn btn-primary" type="button">同期</button>
-          </div>
-          <div class="sync-status">
-            <strong id="syncStatusLabel">未設定</strong>
-            <span id="syncStatusDetail">Google Apps ScriptのURLを設定すると、iPhoneとPCで同じデータになります。</span>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-head">
-          <h3>体重記録</h3>
+          <h3>今日の記録</h3>
         </div>
         <div class="panel-body">
           <div class="grid-2">
@@ -686,15 +502,13 @@
               </select>
             </div>
           </div>
-          <div class="grid-2">
-            <div class="field">
-              <label for="weightInput">体重 kg</label>
-              <input id="weightInput" type="number" step="0.1" min="30" max="250" placeholder="83.8">
-            </div>
-            <div class="field">
-              <label for="stepsInput">歩数</label>
-              <input id="stepsInput" type="number" step="100" min="0" placeholder="8200">
-            </div>
+          <div class="field">
+            <label for="weightInput">体重 kg</label>
+            <input id="weightInput" type="number" step="0.1" min="30" max="250" placeholder="83.8">
+          </div>
+          <div class="field">
+            <label for="noteInput">メモ</label>
+            <textarea id="noteInput" placeholder="例: むくみあり / 外食後 / よく眠れた"></textarea>
           </div>
           <button id="saveWeightBtn" class="btn btn-primary" type="button">体重を保存</button>
         </div>
@@ -702,10 +516,59 @@
 
       <section class="panel">
         <div class="panel-head">
-          <h3>よく食べる食品</h3>
-          <span id="templateCount" class="mini-note"></span>
+          <h3>目標設定</h3>
         </div>
-        <div id="templateList" class="panel-body template-list"></div>
+        <div class="panel-body">
+          <div class="grid-2">
+            <div class="field">
+              <label for="heightInput">身長 cm</label>
+              <input id="heightInput" type="number" step="0.1" min="100" max="230">
+            </div>
+            <div class="field">
+              <label for="startWeightInput">開始体重 kg</label>
+              <input id="startWeightInput" type="number" step="0.1" min="30" max="250">
+            </div>
+            <div class="field">
+              <label for="goalWeightInput">目標体重 kg</label>
+              <input id="goalWeightInput" type="number" step="0.1" min="30" max="250">
+            </div>
+            <div class="field">
+              <label for="displaySlotInput">グラフ基準</label>
+              <select id="displaySlotInput">
+                <option value="morning">朝を優先</option>
+                <option value="evening">夜を優先</option>
+                <option value="average">朝夜平均</option>
+              </select>
+            </div>
+          </div>
+          <button id="saveSettingsBtn" class="btn btn-ghost" type="button">設定を保存</button>
+          <p class="mini-note">初期値: 174cm / 85kg開始 / 70kg目標</p>
+        </div>
+      </section>
+
+      <section class="panel" hidden>
+        <div class="panel-head">
+          <h3>同期</h3>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label for="syncUrlInput">Google同期URL</label>
+            <input id="syncUrlInput" type="url" inputmode="url">
+          </div>
+          <div class="field">
+            <label for="syncTokenInput">同期キー</label>
+            <input id="syncTokenInput" type="password" autocomplete="off">
+          </div>
+          <div class="btn-row">
+            <button id="saveSyncBtn" class="btn btn-ghost" type="button">URL保存</button>
+            <button id="pullSyncBtn" class="btn btn-ghost" type="button">読み込み</button>
+            <button id="pushSyncBtn" class="btn btn-primary" type="button">同期</button>
+          </div>
+          <div class="sync-status">
+            <strong id="syncStatusLabel">未設定</strong>
+            <span id="syncStatusDetail">Googleスプレッドシートと連動します。</span>
+          </div>
+        </div>
       </section>
 
       <section class="panel">
@@ -717,76 +580,60 @@
             <button id="exportBtn" class="btn btn-ghost" type="button">JSON出力</button>
             <label class="btn btn-ghost">JSON読込<input id="importInput" type="file" accept="application/json,.json" hidden></label>
           </div>
-          <button id="sampleBtn" class="btn btn-ghost" type="button">サンプル投入</button>
           <button id="clearBtn" class="btn btn-danger" type="button">全削除</button>
-          <p class="mini-note">保存はこのブラウザ内です。推定値は必ず確認してください。</p>
+          <p class="mini-note">保存はこの端末とGoogleスプレッドシートに反映します。</p>
         </div>
       </section>
     </aside>
 
     <main>
-      <section class="panel">
-        <div class="panel-head">
-          <h2>食事を入力</h2>
-          <span id="todayLabel" class="mini-note"></span>
+      <section class="hero">
+        <div class="current-block">
+          <div class="current-label">現在の体重</div>
+          <div id="currentWeight" class="current-number">--<small>kg</small></div>
+          <div id="statusPill" class="status-pill">まだ記録がありません</div>
+          <p id="goalNote" class="mini-note"></p>
         </div>
-        <div class="panel-body">
-          <div class="top-input">
-            <div class="field">
-              <label for="mealTextInput">自然文</label>
-              <textarea id="mealTextInput" placeholder="例: セブンのサラダチキン、ゆで卵2個、チーズ2個、ブラックコーヒー"></textarea>
+        <div class="current-block">
+          <div class="current-label">目標までの進み具合</div>
+          <div class="meter"><div id="goalMeter" class="meter-fill"></div></div>
+          <div class="grid-2">
+            <div>
+              <div class="mini-note">開始</div>
+              <strong id="startWeightLabel">85.0kg</strong>
             </div>
-            <div class="input-actions">
-              <select id="mealTypeInput">
-                <option value="breakfast">朝</option>
-                <option value="lunch">昼</option>
-                <option value="dinner">夜</option>
-                <option value="snack">間食</option>
-              </select>
-              <button id="estimateBtn" class="btn btn-primary" type="button">推定する</button>
-              <button id="clearDraftBtn" class="btn btn-ghost" type="button">下書きクリア</button>
+            <div>
+              <div class="mini-note">目標</div>
+              <strong id="goalWeightLabel">70.0kg</strong>
             </div>
           </div>
-          <div id="draftPanel" class="draft-list"></div>
-          <div id="draftActions" class="btn-row" hidden>
-            <button id="saveMealBtn" class="btn btn-primary" type="button">修正後の値で保存</button>
-            <button id="saveTemplatesBtn" class="btn btn-ghost" type="button">食品をテンプレ保存</button>
-          </div>
         </div>
       </section>
 
-      <section class="hero-card">
-        <div class="remaining">
-          <div class="remaining-label">今日あと糖質</div>
-          <div><span id="remainingCarbs" class="remaining-number">--</span><small> g</small></div>
-          <div id="ketoStatus" class="keto-pill">記録待ち</div>
+      <section class="metric-grid">
+        <div class="metric-card">
+          <span>開始から</span>
+          <strong id="lostFromStart">--kg</strong>
         </div>
-        <div class="hero-side">
-          <div class="mini-note">糖質目標 <strong id="carbGoalLabel">30g</strong> / 理想は25g前後</div>
-          <div class="meter"><div id="carbMeter" class="meter-fill"></div></div>
-          <div id="foodSuggestions" class="suggestion-list"></div>
+        <div class="metric-card">
+          <span>目標まで</span>
+          <strong id="toGoalWeight">--kg</strong>
+        </div>
+        <div class="metric-card">
+          <span>7日平均</span>
+          <strong id="avg7Weight">--kg</strong>
+        </div>
+        <div class="metric-card">
+          <span>今週の変化</span>
+          <strong id="weekChange">--kg</strong>
         </div>
       </section>
 
-      <section class="metric-grid" aria-label="今日の合計">
-        <div class="metric-card"><span>糖質</span><strong id="totalCarbs">0.0g</strong><span id="carbNote">今日の合計</span></div>
-        <div class="metric-card"><span>タンパク質</span><strong id="totalProtein">0.0g</strong><span>今日の合計</span></div>
-        <div class="metric-card"><span>脂質</span><strong id="totalFat">0.0g</strong><span>今日の合計</span></div>
-        <div class="metric-card"><span>カロリー</span><strong id="totalCalories">0kcal</strong><span>今日の合計</span></div>
-      </section>
-
-      <section class="metric-grid" aria-label="体重概要">
-        <div class="metric-card"><span>現在</span><strong id="currentWeight">--kg</strong><span>朝体重基準</span></div>
-        <div class="metric-card"><span>開始から</span><strong id="lostFromStart">--kg</strong><span id="startWeightLabel">開始 85kg</span></div>
-        <div class="metric-card"><span>目標まで</span><strong id="toGoalWeight">--kg</strong><span id="goalWeightLabel">目標 70kg</span></div>
-        <div class="metric-card"><span>7日平均</span><strong id="avgWeight">--kg</strong><span id="weekChange">今週の変化 --</span></div>
-      </section>
-
-      <div class="content-grid">
+      <section class="content-grid">
         <section class="panel">
           <div class="panel-head">
-            <h3>体重推移</h3>
-            <div class="range-control" aria-label="表示期間">
+            <h2>体重推移</h2>
+            <div class="range-control">
               <button type="button" data-range="7">7日</button>
               <button type="button" data-range="30" class="active">30日</button>
               <button type="button" data-range="all">全期間</button>
@@ -794,146 +641,88 @@
           </div>
           <div class="panel-body">
             <div class="chart-wrap">
-              <canvas id="weightChart" width="900" height="420" aria-label="体重推移"></canvas>
+              <canvas id="weightChart"></canvas>
             </div>
-            <p class="mini-note">緑の線が朝体重、下の棒は糖質・カロリー・歩数の目安です。</p>
+            <p class="mini-note">線: 体重 / 薄線: 7日平均 / 点線: 目標体重</p>
           </div>
         </section>
 
         <section class="panel">
           <div class="panel-head">
-            <h3>今日食べたもの</h3>
-            <span id="mealCount" class="mini-note"></span>
+            <h2>記録一覧</h2>
+            <span id="recordCount" class="mini-note"></span>
           </div>
-          <div id="mealList" class="panel-body meal-list"></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>日付</th>
+                  <th>朝</th>
+                  <th>夜</th>
+                  <th>表示体重</th>
+                  <th>前日差</th>
+                  <th>メモ</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="recordTable"></tbody>
+            </table>
+          </div>
         </section>
-      </div>
-
-      <section class="panel">
-        <div class="panel-head">
-          <h3>日別サマリー</h3>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>日付</th>
-                <th class="num">糖質</th>
-                <th class="num">kcal</th>
-                <th class="num">歩数</th>
-                <th class="num">朝体重</th>
-                <th class="num">前日差</th>
-                <th>判定</th>
-              </tr>
-            </thead>
-            <tbody id="dailyTable"></tbody>
-          </table>
-        </div>
       </section>
     </main>
   </div>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="toast" class="toast"></div>
 
   <script>
-    const STORAGE_KEY = "keto-tracker-state-v1";
-    const SYNC_STORAGE_KEY = "keto-tracker-sync-v1";
-    const MEAL_LABELS = { breakfast: "朝", lunch: "昼", dinner: "夜", snack: "間食" };
+    const STORAGE_KEY = "weight-tracker-app-v1";
+    const SYNC_STORAGE_KEY = "weight-tracker-sync-v1";
     const SLOT_LABELS = { morning: "朝", evening: "夜" };
-    const RANGE_LABELS = { "7": 7, "30": 30, all: null };
+    const RANGE_DAYS = { "7": 7, "30": 30, all: null };
 
     const state = {
       settings: {
         height: 174,
         startWeight: 85,
         goalWeight: 70,
-        carbGoal: 30
+        displaySlot: "morning"
       },
-      meals: [],
       weights: [],
-      templates: {},
+      range: "30",
       sync: {
         url: "",
         token: "",
         lastPulledAt: "",
         lastPushedAt: "",
         pending: false
-      },
-      draft: [],
-      range: "30"
+      }
     };
 
-    const foods = [
-      food("セブン サラダチキン", ["セブンのサラダチキン", "サラダチキン", "チキン"], 1, { carbs: 1.2, protein: 26, fat: 1.5, calories: 120 }, "高"),
-      food("ローソン からあげクン レッド", ["からあげくんレッド", "からあげクンレッド", "からあげくん", "からあげクン"], 1, { carbs: 8.0, protein: 14, fat: 15, calories: 235 }, "中"),
-      food("ゆで卵", ["ゆで卵", "ゆでたまご", "卵", "たまご"], 1, { carbs: 0.2, protein: 6.2, fat: 5.2, calories: 76 }, "高"),
-      food("チーズ", ["チーズ", "ベビーチーズ", "6pチーズ"], 1, { carbs: 0.3, protein: 3.6, fat: 4.8, calories: 60 }, "中"),
-      food("ブラックコーヒー", ["ブラックコーヒー", "無糖コーヒー", "コーヒー"], 1, { carbs: 0, protein: 0.2, fat: 0, calories: 4 }, "高"),
-      food("無糖カフェラテ", ["無糖カフェラテ", "カフェラテ"], 1, { carbs: 5.5, protein: 5.0, fat: 5.0, calories: 90 }, "中"),
-      food("豆腐", ["豆腐", "冷奴", "冷や奴"], 1, { carbs: 2.0, protein: 8.0, fat: 5.0, calories: 95 }, "中"),
-      food("納豆", ["納豆"], 1, { carbs: 2.7, protein: 8.0, fat: 5.0, calories: 100 }, "中"),
-      food("ツナ缶", ["ツナ缶", "シーチキン"], 1, { carbs: 0.2, protein: 13.0, fat: 9.0, calories: 130 }, "中"),
-      food("焼き魚", ["焼き魚", "鮭", "サバ", "鯖"], 1, { carbs: 0.3, protein: 22, fat: 12, calories: 210 }, "中"),
-      food("ステーキ", ["ステーキ", "牛肉"], 1, { carbs: 0.5, protein: 25, fat: 22, calories: 310 }, "中"),
-      food("豚しゃぶ", ["豚しゃぶ", "豚肉"], 1, { carbs: 0.5, protein: 20, fat: 20, calories: 270 }, "中"),
-      food("鶏もも", ["鶏もも", "鶏肉"], 1, { carbs: 0.4, protein: 21, fat: 14, calories: 230 }, "中"),
-      food("ブロッコリー", ["ブロッコリー"], 1, { carbs: 1.6, protein: 4.3, fat: 0.5, calories: 37 }, "中"),
-      food("サラダ", ["サラダ", "野菜サラダ"], 1, { carbs: 4.0, protein: 2.0, fat: 0.5, calories: 45 }, "低"),
-      food("アボカド", ["アボカド"], 1, { carbs: 1.4, protein: 2.5, fat: 18.7, calories: 187 }, "中"),
-      food("ナッツ", ["ナッツ", "アーモンド", "ミックスナッツ"], 1, { carbs: 2.0, protein: 5.0, fat: 14.0, calories: 165 }, "中"),
-      food("プロテイン", ["プロテイン"], 1, { carbs: 3.0, protein: 20.0, fat: 2.0, calories: 120 }, "中"),
-      food("味噌汁", ["味噌汁", "みそ汁"], 1, { carbs: 4.5, protein: 3.0, fat: 2.0, calories: 55 }, "低"),
-      food("ご飯", ["ご飯", "白米", "ライス"], 1, { carbs: 55, protein: 4, fat: 0.5, calories: 250 }, "高"),
-      food("パン", ["パン", "食パン"], 1, { carbs: 26, protein: 6, fat: 4, calories: 170 }, "中"),
-      food("ビール", ["ビール"], 1, { carbs: 10, protein: 0.5, fat: 0, calories: 150 }, "中")
-    ];
-
     const el = {
-      height: document.getElementById("heightInput"),
-      carbGoal: document.getElementById("carbGoalInput"),
-      startWeight: document.getElementById("startWeightInput"),
-      goalWeight: document.getElementById("goalWeightInput"),
-      saveSettings: document.getElementById("saveSettingsBtn"),
-      mealText: document.getElementById("mealTextInput"),
-      mealType: document.getElementById("mealTypeInput"),
-      estimate: document.getElementById("estimateBtn"),
-      clearDraft: document.getElementById("clearDraftBtn"),
-      draftPanel: document.getElementById("draftPanel"),
-      draftActions: document.getElementById("draftActions"),
-      saveMeal: document.getElementById("saveMealBtn"),
-      saveTemplates: document.getElementById("saveTemplatesBtn"),
-      remainingCarbs: document.getElementById("remainingCarbs"),
-      ketoStatus: document.getElementById("ketoStatus"),
-      carbGoalLabel: document.getElementById("carbGoalLabel"),
-      carbMeter: document.getElementById("carbMeter"),
-      foodSuggestions: document.getElementById("foodSuggestions"),
-      totalCarbs: document.getElementById("totalCarbs"),
-      totalProtein: document.getElementById("totalProtein"),
-      totalFat: document.getElementById("totalFat"),
-      totalCalories: document.getElementById("totalCalories"),
-      carbNote: document.getElementById("carbNote"),
       weightDate: document.getElementById("weightDateInput"),
       weightSlot: document.getElementById("weightSlotInput"),
       weight: document.getElementById("weightInput"),
-      steps: document.getElementById("stepsInput"),
+      note: document.getElementById("noteInput"),
       saveWeight: document.getElementById("saveWeightBtn"),
+      height: document.getElementById("heightInput"),
+      startWeight: document.getElementById("startWeightInput"),
+      goalWeight: document.getElementById("goalWeightInput"),
+      displaySlot: document.getElementById("displaySlotInput"),
+      saveSettings: document.getElementById("saveSettingsBtn"),
       currentWeight: document.getElementById("currentWeight"),
-      lostFromStart: document.getElementById("lostFromStart"),
-      toGoalWeight: document.getElementById("toGoalWeight"),
-      avgWeight: document.getElementById("avgWeight"),
+      statusPill: document.getElementById("statusPill"),
+      goalNote: document.getElementById("goalNote"),
+      goalMeter: document.getElementById("goalMeter"),
       startWeightLabel: document.getElementById("startWeightLabel"),
       goalWeightLabel: document.getElementById("goalWeightLabel"),
+      lostFromStart: document.getElementById("lostFromStart"),
+      toGoalWeight: document.getElementById("toGoalWeight"),
+      avg7Weight: document.getElementById("avg7Weight"),
       weekChange: document.getElementById("weekChange"),
       weightChart: document.getElementById("weightChart"),
-      mealList: document.getElementById("mealList"),
-      mealCount: document.getElementById("mealCount"),
-      dailyTable: document.getElementById("dailyTable"),
-      templateList: document.getElementById("templateList"),
-      templateCount: document.getElementById("templateCount"),
-      exportBtn: document.getElementById("exportBtn"),
-      importInput: document.getElementById("importInput"),
-      sampleBtn: document.getElementById("sampleBtn"),
-      clearBtn: document.getElementById("clearBtn"),
+      recordTable: document.getElementById("recordTable"),
+      recordCount: document.getElementById("recordCount"),
       syncUrl: document.getElementById("syncUrlInput"),
       syncToken: document.getElementById("syncTokenInput"),
       saveSync: document.getElementById("saveSyncBtn"),
@@ -941,92 +730,50 @@
       pushSync: document.getElementById("pushSyncBtn"),
       syncStatusLabel: document.getElementById("syncStatusLabel"),
       syncStatusDetail: document.getElementById("syncStatusDetail"),
-      todayLabel: document.getElementById("todayLabel"),
+      exportBtn: document.getElementById("exportBtn"),
+      importInput: document.getElementById("importInput"),
+      clearBtn: document.getElementById("clearBtn"),
       toast: document.getElementById("toast")
     };
 
-    function food(name, aliases, serving, macros, confidence) {
-      return { name, aliases, serving, macros, confidence };
-    }
-
     function todayIso() {
       const now = new Date();
-      const offset = now.getTimezoneOffset() * 60000;
-      return new Date(now.getTime() - offset).toISOString().slice(0, 10);
-    }
-
-    function formatDate(iso) {
-      return new Date(`${iso}T00:00:00`).toLocaleDateString("ja-JP", { month: "short", day: "numeric", weekday: "short" });
-    }
-
-    function normalizeText(text) {
-      return String(text || "").toLowerCase().replaceAll(/\s+/g, "").replace(/[０-９]/g, (s) => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
-    }
-
-    function round(value, digits = 1) {
-      const scale = 10 ** digits;
-      return Math.round((Number(value) || 0) * scale) / scale;
-    }
-
-    function signed(value, unit = "kg") {
-      const sign = value > 0 ? "+" : "";
-      return `${sign}${round(value, 1).toFixed(1)}${unit}`;
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      return now.toISOString().slice(0, 10);
     }
 
     function load() {
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
         Object.assign(state.settings, saved.settings || {});
-        state.meals = saved.meals || [];
-        state.weights = saved.weights || [];
-        state.templates = saved.templates || {};
+        state.weights = Array.isArray(saved.weights) ? saved.weights : [];
       } catch {
-        state.meals = [];
         state.weights = [];
-        state.templates = {};
       }
+
       try {
         Object.assign(state.sync, JSON.parse(localStorage.getItem(SYNC_STORAGE_KEY) || "{}"));
       } catch {
         state.sync = { url: "", token: "", lastPulledAt: "", lastPushedAt: "", pending: false };
       }
-      applySyncParams();
 
-      el.height.value = state.settings.height;
-      el.carbGoal.value = state.settings.carbGoal;
-      el.startWeight.value = state.settings.startWeight;
-      el.goalWeight.value = state.settings.goalWeight;
-      el.syncUrl.value = state.sync.url || "";
-      el.syncToken.value = state.sync.token || "";
       el.weightDate.value = todayIso();
-      el.todayLabel.textContent = new Date().toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric", weekday: "long" });
+      el.weightSlot.value = "morning";
+      syncSettingsInputs();
       renderSyncStatus();
     }
 
-    function applySyncParams() {
-      const params = new URLSearchParams(window.location.search);
-      const url = params.get("syncUrl");
-      const token = params.get("syncToken");
-      if (!url && !token) return;
-      if (url) state.sync.url = url;
-      if (token) state.sync.token = token;
-      localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(state.sync));
-      const cleanUrl = `${window.location.origin}${window.location.pathname}`;
-      window.history.replaceState({}, document.title, cleanUrl);
-      window.setTimeout(() => {
-        renderSyncStatus();
-        showToast("同期設定を保存しました");
-      }, 500);
+    function syncSettingsInputs() {
+      el.height.value = state.settings.height;
+      el.startWeight.value = state.settings.startWeight;
+      el.goalWeight.value = state.settings.goalWeight;
+      el.displaySlot.value = state.settings.displaySlot || "morning";
+      el.syncUrl.value = state.sync.url || "";
+      el.syncToken.value = state.sync.token || "";
     }
 
     function save() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        settings: state.settings,
-        meals: state.meals,
-        weights: state.weights,
-        templates: state.templates
-      }));
-      localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(state.sync));
+      saveLocalOnly();
       queueAutoSync();
     }
 
@@ -1038,36 +785,51 @@
     function getAppData() {
       return {
         settings: state.settings,
-        meals: state.meals,
-        weights: state.weights,
-        templates: state.templates
+        weights: state.weights
       };
     }
 
     function applyAppData(data) {
       Object.assign(state.settings, data.settings || {});
-      state.meals = Array.isArray(data.meals) ? data.meals : [];
       state.weights = Array.isArray(data.weights) ? data.weights : [];
-      state.templates = data.templates || {};
-      el.height.value = state.settings.height;
-      el.carbGoal.value = state.settings.carbGoal;
-      el.startWeight.value = state.settings.startWeight;
-      el.goalWeight.value = state.settings.goalWeight;
+      syncSettingsInputs();
       saveLocalOnly();
       render();
     }
 
-    function showToast(message) {
-      el.toast.textContent = message;
-      el.toast.classList.add("show");
-      window.clearTimeout(showToast.timer);
-      showToast.timer = window.setTimeout(() => el.toast.classList.remove("show"), 1800);
+    function mergeRecordLists(primary = [], secondary = []) {
+      const records = new Map();
+      const put = (record) => {
+        if (!record || !record.id) return;
+        const existing = records.get(record.id);
+        if (!existing) {
+          records.set(record.id, record);
+          return;
+        }
+        const existingTime = Date.parse(existing.updatedAt || existing.createdAt || "") || 0;
+        const recordTime = Date.parse(record.updatedAt || record.createdAt || "") || 0;
+        if (recordTime >= existingTime) records.set(record.id, record);
+      };
+      primary.forEach(put);
+      secondary.forEach(put);
+      return Array.from(records.values()).sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+    }
+
+    function mergeAppData(remoteData = {}) {
+      const localData = getAppData();
+      return {
+        settings: {
+          ...localData.settings,
+          ...(remoteData.settings || {})
+        },
+        weights: mergeRecordLists(remoteData.weights || [], localData.weights || [])
+      };
     }
 
     function renderSyncStatus() {
       if (!state.sync.url) {
-        el.syncStatusLabel.textContent = "未設定";
-        el.syncStatusDetail.textContent = "Google Apps ScriptのURLを設定すると、iPhoneとPCで同じデータになります。";
+        el.syncStatusLabel.textContent = "自動同期";
+        el.syncStatusDetail.textContent = "Googleスプレッドシートと連動します。";
         return;
       }
       const pushed = state.sync.lastPushedAt ? new Date(state.sync.lastPushedAt).toLocaleString("ja-JP") : "未実行";
@@ -1092,7 +854,7 @@
 
     function jsonp(url) {
       return new Promise((resolve, reject) => {
-        const callback = `ketoSync${Date.now()}${Math.floor(Math.random() * 100000)}`;
+        const callback = `weightSync${Date.now()}${Math.floor(Math.random() * 100000)}`;
         const script = document.createElement("script");
         const cleanup = () => {
           delete window[callback];
@@ -1114,21 +876,18 @@
 
     async function pullSync() {
       const url = syncUrl();
-      if (!url) {
-        showToast("同期URLを設定してください");
-        return;
-      }
+      if (!url) return;
       state.sync.pending = true;
       renderSyncStatus();
       try {
         const response = await jsonp(`${url}?action=load&token=${encodeURIComponent(syncToken())}`);
         if (!response || !response.ok) throw new Error(response && response.error ? response.error : "読み込みに失敗しました");
-        applyAppData(response.data || {});
+        applyAppData(mergeAppData(response.data || {}));
         state.sync.lastPulledAt = new Date().toISOString();
         state.sync.pending = false;
         saveLocalOnly();
         renderSyncStatus();
-        showToast("Googleから読み込みました");
+        pushSync(true);
       } catch (error) {
         state.sync.pending = false;
         saveLocalOnly();
@@ -1163,326 +922,174 @@
       }
     }
 
-    function estimateMeal(text) {
-      const fragments = text.split(/[、,，。＋+と\n]/).map((part) => part.trim()).filter(Boolean);
-      const results = [];
-      const used = new Set();
-
-      fragments.forEach((fragment) => {
-        const estimated = estimateFragment(fragment);
-        results.push(...estimated);
-        estimated.forEach((item) => used.add(item.source));
-      });
-
-      if (!results.length && text.trim()) {
-        results.push(unknownItem(text.trim()));
-      }
-
-      return results;
+    function showToast(message) {
+      el.toast.textContent = message;
+      el.toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => el.toast.classList.remove("show"), 1800);
     }
 
-    function estimateFragment(fragment) {
-      const normalized = normalizeText(fragment);
-      const templateKey = findTemplateKey(normalized);
-      if (templateKey) {
-        const template = state.templates[templateKey];
-        const quantity = readQuantity(normalized, template.name);
-        return [makeItem(template.name, quantity, template.macros, "高", "過去の修正値を使用", fragment)];
-      }
-
-      const matches = foods
-        .map((base) => {
-          const alias = base.aliases.find((word) => normalized.includes(normalizeText(word)));
-          return alias ? { base, alias, index: normalized.indexOf(normalizeText(alias)), length: normalizeText(alias).length } : null;
-        })
-        .filter(Boolean)
-        .sort((a, b) => a.index - b.index || b.length - a.length);
-
-      if (!matches.length) return [unknownItem(fragment)];
-
-      return matches.slice(0, 1).map(({ base, alias }) => {
-        const quantity = readQuantity(normalized, alias);
-        const note = base.confidence === "高" ? "食品辞書から推定" : "商品差があるため確認推奨";
-        return makeItem(base.name, quantity, base.macros, base.confidence, note, fragment);
-      });
+    function numberOrNull(value) {
+      const number = Number(value);
+      return Number.isFinite(number) && number > 0 ? number : null;
     }
 
-    function findTemplateKey(normalized) {
-      return Object.keys(state.templates).find((key) => normalized.includes(key));
+    function round(value, digits = 1) {
+      const scale = 10 ** digits;
+      return Math.round((Number(value) || 0) * scale) / scale;
     }
 
-    function readQuantity(text, alias) {
-      const aliasText = normalizeText(alias);
-      const afterAlias = text.slice(Math.max(0, text.indexOf(aliasText) + aliasText.length));
-      const beforeAlias = text.slice(0, Math.max(0, text.indexOf(aliasText)));
-      const candidates = [afterAlias, beforeAlias, text];
-      for (const part of candidates) {
-        const match = part.match(/(\d+(?:\.\d+)?)(個|こ|枚|本|杯|パック|袋|切れ|g|グラム)?/);
-        if (match) {
-          const value = Number(match[1]);
-          if (match[2] === "g" || match[2] === "グラム") return Math.max(0.1, value / 100);
-          return Math.max(0.1, value);
-        }
-      }
-      return 1;
+    function signed(value) {
+      if (value === null || value === undefined || !Number.isFinite(value)) return "--kg";
+      return `${value > 0 ? "+" : ""}${value.toFixed(1)}kg`;
     }
 
-    function makeItem(name, quantity, macros, confidence, note, source) {
-      return {
-        id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
-        source,
-        name,
-        quantity,
-        carbs: round(macros.carbs * quantity),
-        protein: round(macros.protein * quantity),
-        fat: round(macros.fat * quantity),
-        calories: Math.round(macros.calories * quantity),
-        confidence,
-        note
-      };
+    function formatDate(iso) {
+      const date = new Date(`${iso}T00:00:00`);
+      return date.toLocaleDateString("ja-JP", { month: "numeric", day: "numeric", weekday: "short" });
     }
 
-    function unknownItem(fragment) {
-      return {
-        id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
-        source: fragment,
-        name: fragment,
-        quantity: 1,
-        carbs: 0,
-        protein: 0,
-        fat: 0,
-        calories: 0,
-        confidence: "要確認",
-        note: "辞書にない食品です。栄養表示を見て修正してください。"
-      };
-    }
-
-    function totalsForDate(date) {
-      const items = state.meals.filter((meal) => meal.date === date).flatMap((meal) => meal.items);
-      return items.reduce((sum, item) => {
-        sum.carbs += Number(item.carbs) || 0;
-        sum.protein += Number(item.protein) || 0;
-        sum.fat += Number(item.fat) || 0;
-        sum.calories += Number(item.calories) || 0;
-        return sum;
-      }, { carbs: 0, protein: 0, fat: 0, calories: 0 });
-    }
-
-    function ketoStatus(carbs) {
-      if (carbs <= 25) return { label: "かなり良い", className: "high", detail: "糖質0〜25g。ケト継続にかなり良い範囲です。" };
-      if (carbs <= 30) return { label: "OK", className: "ok", detail: "25〜30g。目標内ですが、残りはほぼ低糖質で。" };
-      if (carbs <= 50) return { label: "ゆるケト", className: "warn", detail: "30〜50g。厳密ケトなら明日は調整しましょう。" };
-      return { label: "ケト外れの可能性あり", className: "bad", detail: "50g以上。今日は糖質ほぼゼロ食品中心がおすすめです。" };
-    }
-
-    function suggestionsForRemaining(remaining) {
-      if (remaining >= 20) return ["肉・魚・卵・チーズはOK", "豆腐、サラダ、ブロッコリーも入れやすい", "調味料とカフェラテの糖質だけ注意"];
-      if (remaining >= 10) return ["肉、卵、魚、チーズ中心", "野菜は低糖質を少量", "ナッツは食べすぎ注意"];
-      if (remaining >= 0) return ["残り糖質10g以下", "肉・卵・魚・チーズ中心", "飲み物は無糖に固定"];
-      return ["糖質オーバー", "今日は糖質ほぼゼロ食品のみ推奨", "明日は朝から25g前後を狙う"];
-    }
-
-    function primaryWeights() {
-      const byDate = new Map();
-      state.weights.slice().sort((a, b) => a.date.localeCompare(b.date)).forEach((entry) => {
-        if (!byDate.has(entry.date) || entry.slot === "morning") byDate.set(entry.date, entry);
-      });
-      return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
-    }
-
-    function stepsForDate(date) {
-      const entries = state.weights.filter((entry) => entry.date === date && Number.isFinite(Number(entry.steps)));
-      if (!entries.length) return 0;
-      return Math.max(...entries.map((entry) => Number(entry.steps) || 0));
+    function dateShift(iso, days) {
+      const date = new Date(`${iso}T00:00:00`);
+      date.setDate(date.getDate() + days);
+      date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+      return date.toISOString().slice(0, 10);
     }
 
     function dailyRows() {
-      const dates = new Set([
-        ...state.meals.map((meal) => meal.date),
-        ...state.weights.map((entry) => entry.date)
-      ]);
-      const weights = primaryWeights();
-      const previousByDate = new Map();
-      weights.forEach((entry, index) => previousByDate.set(entry.date, index > 0 ? entry.weight - weights[index - 1].weight : null));
-
-      return [...dates].sort((a, b) => b.localeCompare(a)).map((date) => {
-        const totals = totalsForDate(date);
-        const weight = weights.find((entry) => entry.date === date);
-        return {
-          date,
-          totals,
-          steps: stepsForDate(date),
-          weight,
-          diff: previousByDate.get(date)
-        };
+      const rows = new Map();
+      state.weights.forEach((entry) => {
+        if (!entry.date) return;
+        if (!rows.has(entry.date)) rows.set(entry.date, { date: entry.date, morning: null, evening: null, notes: [] });
+        const row = rows.get(entry.date);
+        if (entry.slot === "evening") row.evening = entry;
+        else row.morning = entry;
+        if (entry.note) row.notes.push(entry.note);
       });
+
+      return Array.from(rows.values())
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .map((row) => {
+          row.displayWeight = displayWeightForRow(row);
+          return row;
+        })
+        .filter((row) => row.displayWeight);
     }
 
-    function currentWeightStats() {
-      const weights = primaryWeights();
-      const latest = weights[weights.length - 1];
-      const lastSeven = weights.slice(-7);
-      const avg = lastSeven.length ? lastSeven.reduce((sum, entry) => sum + entry.weight, 0) / lastSeven.length : null;
-      const weekDiff = lastSeven.length >= 2 ? lastSeven[lastSeven.length - 1].weight - lastSeven[0].weight : null;
-      return { weights, latest, avg, weekDiff };
+    function displayWeightForRow(row) {
+      const mode = state.settings.displaySlot || "morning";
+      const morning = row.morning ? Number(row.morning.weight) : null;
+      const evening = row.evening ? Number(row.evening.weight) : null;
+      if (mode === "average" && morning && evening) return { weight: round((morning + evening) / 2), source: "平均" };
+      if (mode === "evening") {
+        if (evening) return { weight: evening, source: "夜" };
+        if (morning) return { weight: morning, source: "朝" };
+      }
+      if (morning) return { weight: morning, source: "朝" };
+      if (evening) return { weight: evening, source: "夜" };
+      return null;
+    }
+
+    function visibleRows() {
+      const rows = dailyRows();
+      const days = RANGE_DAYS[state.range];
+      if (!days || rows.length <= days) return rows;
+      return rows.slice(-days);
+    }
+
+    function movingAverage(rows, index, windowSize = 7) {
+      const start = Math.max(0, index - windowSize + 1);
+      const subset = rows.slice(start, index + 1).map((row) => row.displayWeight.weight);
+      if (!subset.length) return null;
+      return subset.reduce((sum, value) => sum + value, 0) / subset.length;
+    }
+
+    function latestRow() {
+      const rows = dailyRows();
+      return rows.length ? rows[rows.length - 1] : null;
+    }
+
+    function averageSince(days) {
+      const rows = dailyRows();
+      const latest = latestRow();
+      if (!latest) return null;
+      const from = dateShift(latest.date, -days + 1);
+      const values = rows.filter((row) => row.date >= from).map((row) => row.displayWeight.weight);
+      if (!values.length) return null;
+      return values.reduce((sum, value) => sum + value, 0) / values.length;
     }
 
     function render() {
-      renderToday();
-      renderDraft();
-      renderMeals();
-      renderTemplates();
-      renderWeightStats();
-      renderDailyTable();
+      renderSummary();
+      renderTable();
       drawWeightChart();
     }
 
-    function renderToday() {
-      const today = todayIso();
-      const totals = totalsForDate(today);
-      const goal = Number(state.settings.carbGoal) || 30;
-      const remaining = goal - totals.carbs;
-      const status = ketoStatus(totals.carbs);
-
-      el.remainingCarbs.textContent = remaining.toFixed(1);
-      el.ketoStatus.textContent = status.label;
-      el.ketoStatus.className = `keto-pill ${status.className === "high" ? "" : status.className}`;
-      el.carbGoalLabel.textContent = `${goal}g`;
-      el.carbMeter.style.width = `${Math.min(100, Math.max(0, (totals.carbs / goal) * 100))}%`;
-      el.carbMeter.style.background = status.className === "bad" ? "var(--red)" : status.className === "warn" ? "var(--amber)" : "var(--green)";
-      el.totalCarbs.textContent = `${totals.carbs.toFixed(1)}g`;
-      el.totalProtein.textContent = `${totals.protein.toFixed(1)}g`;
-      el.totalFat.textContent = `${totals.fat.toFixed(1)}g`;
-      el.totalCalories.textContent = `${Math.round(totals.calories)}kcal`;
-      el.carbNote.textContent = status.detail;
-      el.foodSuggestions.innerHTML = suggestionsForRemaining(remaining).map((text) => `<div class="suggestion-item">${escapeHtml(text)}</div>`).join("");
-    }
-
-    function renderDraft() {
-      el.draftActions.hidden = state.draft.length === 0;
-      if (!state.draft.length) {
-        el.draftPanel.innerHTML = `<div class="empty">食事を入力して「推定する」を押すと、確認・修正できます。</div>`;
-        return;
-      }
-
-      el.draftPanel.innerHTML = state.draft.map((item, index) => itemEditor(item, index)).join("");
-    }
-
-    function itemEditor(item, index) {
-      const confidenceClass = item.confidence === "高" ? "high" : item.confidence === "中" ? "medium" : "low";
-      return `
-        <div class="draft-item" data-draft-index="${index}">
-          <div class="item-head">
-            <div>
-              <div class="item-title">${escapeHtml(item.name)}</div>
-              <div class="mini-note">${escapeHtml(item.note)} / 量 ${round(item.quantity, 1)}</div>
-            </div>
-            <span class="tag ${confidenceClass}">${item.confidence}</span>
-          </div>
-          <div class="macro-row">
-            ${macroInput("糖質g", "carbs", item.carbs)}
-            ${macroInput("タンパク質g", "protein", item.protein)}
-            ${macroInput("脂質g", "fat", item.fat)}
-            ${macroInput("kcal", "calories", item.calories)}
-          </div>
-          <div class="item-actions">
-            <input data-field="name" value="${escapeAttr(item.name)}" aria-label="食品名">
-            <button class="icon-btn" type="button" data-remove-draft="${index}" title="削除">×</button>
-          </div>
-        </div>
-      `;
-    }
-
-    function macroInput(label, field, value) {
-      return `
-        <div class="macro-field">
-          <label>${label}</label>
-          <input type="number" step="0.1" data-field="${field}" value="${Number(value) || 0}">
-        </div>
-      `;
-    }
-
-    function renderMeals() {
-      const todayMeals = state.meals.filter((meal) => meal.date === todayIso()).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-      el.mealCount.textContent = `${todayMeals.length}件`;
-      if (!todayMeals.length) {
-        el.mealList.innerHTML = `<div class="empty">今日の食事はまだありません。</div>`;
-        return;
-      }
-      el.mealList.innerHTML = todayMeals.map((meal) => {
-        const totals = meal.items.reduce((sum, item) => {
-          sum.carbs += Number(item.carbs) || 0;
-          sum.protein += Number(item.protein) || 0;
-          sum.fat += Number(item.fat) || 0;
-          sum.calories += Number(item.calories) || 0;
-          return sum;
-        }, { carbs: 0, protein: 0, fat: 0, calories: 0 });
-        return `
-          <div class="meal-item">
-            <div class="item-head">
-              <div>
-                <div class="item-title">${MEAL_LABELS[meal.type]} ${escapeHtml(meal.text || "")}</div>
-                <div class="mini-note">${meal.items.map((item) => escapeHtml(item.name)).join(" / ")}</div>
-              </div>
-              <button class="icon-btn" type="button" data-delete-meal="${meal.id}" title="削除">×</button>
-            </div>
-            <div class="mini-note">糖質 ${totals.carbs.toFixed(1)}g / P ${totals.protein.toFixed(1)}g / F ${totals.fat.toFixed(1)}g / ${Math.round(totals.calories)}kcal</div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function renderTemplates() {
-      const templates = Object.values(state.templates).sort((a, b) => a.name.localeCompare(b.name, "ja"));
-      el.templateCount.textContent = `${templates.length}件`;
-      if (!templates.length) {
-        el.templateList.innerHTML = `<div class="empty">修正した食品をテンプレ保存すると、次回から優先されます。</div>`;
-        return;
-      }
-      el.templateList.innerHTML = templates.slice(0, 16).map((template) => `
-        <div class="template-item">
-          <div class="item-head">
-            <div>
-              <div class="item-title">${escapeHtml(template.name)}</div>
-              <div class="mini-note">糖質 ${template.macros.carbs}g / P ${template.macros.protein}g / F ${template.macros.fat}g / ${template.macros.calories}kcal</div>
-            </div>
-            <button class="icon-btn" type="button" data-delete-template="${escapeAttr(normalizeText(template.name))}" title="削除">×</button>
-          </div>
-        </div>
-      `).join("");
-    }
-
-    function renderWeightStats() {
-      const { latest, avg, weekDiff } = currentWeightStats();
+    function renderSummary() {
+      const latest = latestRow();
       const start = Number(state.settings.startWeight) || 85;
       const goal = Number(state.settings.goalWeight) || 70;
-
-      el.currentWeight.textContent = latest ? `${latest.weight.toFixed(1)}kg` : "--kg";
-      el.lostFromStart.textContent = latest ? signed(latest.weight - start) : "--kg";
-      el.toGoalWeight.textContent = latest ? `あと ${Math.max(0, latest.weight - goal).toFixed(1)}kg` : "--kg";
-      el.avgWeight.textContent = avg ? `${avg.toFixed(1)}kg` : "--kg";
-      el.startWeightLabel.textContent = `開始 ${start}kg`;
-      el.goalWeightLabel.textContent = `目標 ${goal}kg`;
-      el.weekChange.textContent = weekDiff === null ? "今週の変化 --" : `今週の変化 ${signed(weekDiff)}`;
-    }
-
-    function renderDailyTable() {
+      const heightM = (Number(state.settings.height) || 174) / 100;
+      const avg7 = averageSince(7);
       const rows = dailyRows();
-      if (!rows.length) {
-        el.dailyTable.innerHTML = `<tr><td colspan="7"><div class="empty">食事か体重を記録すると日別で並びます。</div></td></tr>`;
+      const weekAgo = latest ? rows.filter((row) => row.date <= dateShift(latest.date, -7)).pop() : null;
+
+      el.startWeightLabel.textContent = `${start.toFixed(1)}kg`;
+      el.goalWeightLabel.textContent = `${goal.toFixed(1)}kg`;
+
+      if (!latest) {
+        el.currentWeight.innerHTML = `--<small>kg</small>`;
+        el.statusPill.textContent = "まだ記録がありません";
+        el.goalNote.textContent = "最初の体重を入力すると推移が見えるようになります。";
+        el.goalMeter.style.width = "0%";
+        el.lostFromStart.textContent = "--kg";
+        el.toGoalWeight.textContent = "--kg";
+        el.avg7Weight.textContent = "--kg";
+        el.weekChange.textContent = "--kg";
         return;
       }
-      el.dailyTable.innerHTML = rows.slice(0, 60).map((row) => {
-        const status = ketoStatus(row.totals.carbs);
+
+      const current = latest.displayWeight.weight;
+      const lost = current - start;
+      const remaining = Math.max(0, current - goal);
+      const totalTarget = Math.max(0.1, start - goal);
+      const progress = Math.max(0, Math.min(100, ((start - current) / totalTarget) * 100));
+      const bmi = heightM ? current / (heightM * heightM) : null;
+      const weekDiff = weekAgo ? current - weekAgo.displayWeight.weight : null;
+
+      el.currentWeight.innerHTML = `${current.toFixed(1)}<small>kg</small>`;
+      el.statusPill.textContent = `${formatDate(latest.date)} ${latest.displayWeight.source}の記録`;
+      el.goalNote.textContent = `BMI ${bmi ? bmi.toFixed(1) : "--"} / 目標まで あと${remaining.toFixed(1)}kg`;
+      el.goalMeter.style.width = `${progress}%`;
+      el.lostFromStart.textContent = signed(lost);
+      el.lostFromStart.className = lost <= 0 ? "good" : "warn";
+      el.toGoalWeight.textContent = `あと ${remaining.toFixed(1)}kg`;
+      el.avg7Weight.textContent = avg7 ? `${avg7.toFixed(1)}kg` : "--kg";
+      el.weekChange.textContent = weekDiff === null ? "--kg" : signed(weekDiff);
+      el.weekChange.className = weekDiff === null ? "" : weekDiff <= 0 ? "good" : "warn";
+    }
+
+    function renderTable() {
+      const rows = dailyRows().slice().reverse();
+      el.recordCount.textContent = `${state.weights.length}件`;
+      if (!rows.length) {
+        el.recordTable.innerHTML = `<tr><td colspan="7"><div class="empty">体重を保存するとここに表示されます。</div></td></tr>`;
+        return;
+      }
+
+      el.recordTable.innerHTML = rows.map((row, index) => {
+        const previous = rows[index + 1];
+        const diff = previous ? row.displayWeight.weight - previous.displayWeight.weight : null;
+        const notes = Array.from(new Set(row.notes.filter(Boolean))).join(" / ");
         return `
           <tr>
             <td>${formatDate(row.date)}</td>
-            <td class="num">${row.totals.carbs.toFixed(1)}g</td>
-            <td class="num">${Math.round(row.totals.calories)}</td>
-            <td class="num">${row.steps || "--"}</td>
-            <td class="num">${row.weight ? row.weight.weight.toFixed(1) : "--"}</td>
-            <td class="num ${row.diff === null ? "" : row.diff <= 0 ? "good" : "warn"}">${row.diff === null || row.diff === undefined ? "--" : signed(row.diff)}</td>
-            <td>${status.label}</td>
+            <td class="num">${row.morning ? row.morning.weight.toFixed(1) : "--"}</td>
+            <td class="num">${row.evening ? row.evening.weight.toFixed(1) : "--"}</td>
+            <td class="num">${row.displayWeight.weight.toFixed(1)}kg</td>
+            <td class="num ${diff === null ? "" : diff <= 0 ? "good" : "warn"}">${diff === null ? "--" : signed(diff)}</td>
+            <td>${escapeHtml(notes || "")}</td>
+            <td class="num"><button class="btn btn-ghost" type="button" data-edit-date="${row.date}">編集</button></td>
           </tr>
         `;
       }).join("");
@@ -1496,37 +1103,36 @@
       canvas.width = Math.max(1, Math.floor(rect.width * ratio));
       canvas.height = Math.max(1, Math.floor(rect.height * ratio));
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
       const width = rect.width;
       const height = rect.height;
       ctx.clearRect(0, 0, width, height);
 
-      let rows = dailyRows().slice().reverse();
-      const rangeDays = RANGE_LABELS[state.range];
-      if (rangeDays) rows = rows.slice(-rangeDays);
-      const weightRows = rows.filter((row) => row.weight);
-      if (!rows.length || !weightRows.length) {
-        ctx.fillStyle = "#667474";
+      const rows = visibleRows();
+      if (!rows.length) {
+        ctx.fillStyle = "#687577";
         ctx.font = "700 14px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
         ctx.textAlign = "center";
         ctx.fillText("体重を記録するとグラフが表示されます", width / 2, height / 2);
         return;
       }
 
-      const pad = { top: 22, right: 18, bottom: 64, left: 48 };
+      const pad = { top: 24, right: 18, bottom: 48, left: 48 };
       const chartW = width - pad.left - pad.right;
       const chartH = height - pad.top - pad.bottom;
-      const weights = weightRows.map((row) => row.weight.weight);
-      let min = Math.min(...weights, Number(state.settings.goalWeight) || 70);
-      let max = Math.max(...weights, Number(state.settings.startWeight) || 85);
+      const values = rows.map((row) => row.displayWeight.weight);
+      const goal = Number(state.settings.goalWeight) || 70;
+      let min = Math.min(...values, goal);
+      let max = Math.max(...values, Number(state.settings.startWeight) || 85);
       const spread = Math.max(1, max - min);
-      min = Math.floor((min - spread * 0.12) * 10) / 10;
-      max = Math.ceil((max + spread * 0.12) * 10) / 10;
+      min = Math.floor((min - spread * 0.14) * 10) / 10;
+      max = Math.ceil((max + spread * 0.14) * 10) / 10;
+
       const xAt = (index) => pad.left + (rows.length === 1 ? chartW / 2 : (chartW * index) / (rows.length - 1));
       const yAt = (value) => pad.top + ((max - value) / (max - min)) * chartH;
-      const barBase = height - pad.bottom + 35;
 
       ctx.strokeStyle = "#e1e7e0";
-      ctx.fillStyle = "#667474";
+      ctx.fillStyle = "#687577";
       ctx.font = "12px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
       ctx.textAlign = "right";
       ctx.textBaseline = "middle";
@@ -1540,39 +1146,23 @@
         ctx.fillText(value.toFixed(1), pad.left - 8, y);
       }
 
-      rows.forEach((row, index) => {
-        const x = xAt(index);
-        const carbsHeight = Math.min(26, row.totals.carbs / Math.max(1, state.settings.carbGoal) * 26);
-        const kcalHeight = Math.min(26, row.totals.calories / 2500 * 26);
-        const stepHeight = Math.min(26, row.steps / 10000 * 26);
-        ctx.fillStyle = "rgba(22, 112, 90, 0.42)";
-        ctx.fillRect(x - 8, barBase - carbsHeight, 4, carbsHeight);
-        ctx.fillStyle = "rgba(198, 129, 33, 0.42)";
-        ctx.fillRect(x - 2, barBase - kcalHeight, 4, kcalHeight);
-        ctx.fillStyle = "rgba(47, 111, 159, 0.42)";
-        ctx.fillRect(x + 4, barBase - stepHeight, 4, stepHeight);
-      });
-
+      const goalY = yAt(goal);
+      ctx.strokeStyle = "#b7781c";
+      ctx.setLineDash([5, 5]);
       ctx.beginPath();
-      rows.forEach((row, index) => {
-        if (!row.weight) return;
-        const x = xAt(index);
-        const y = yAt(row.weight.weight);
-        if (index === rows.findIndex((r) => r.weight)) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.strokeStyle = "#16705a";
-      ctx.lineWidth = 3;
-      ctx.lineJoin = "round";
-      ctx.lineCap = "round";
+      ctx.moveTo(pad.left, goalY);
+      ctx.lineTo(width - pad.right, goalY);
       ctx.stroke();
+      ctx.setLineDash([]);
+
+      drawLine(ctx, rows.map((row, index) => ({ x: xAt(index), y: yAt(row.displayWeight.weight) })), "#146c78", 3);
+      drawLine(ctx, rows.map((row, index) => ({ x: xAt(index), y: yAt(movingAverage(rows, index, 7)) })), "rgba(50, 110, 168, 0.55)", 2);
 
       rows.forEach((row, index) => {
-        if (!row.weight) return;
         const x = xAt(index);
-        const y = yAt(row.weight.weight);
-        ctx.fillStyle = "#ffffff";
-        ctx.strokeStyle = "#16705a";
+        const y = yAt(row.displayWeight.weight);
+        ctx.fillStyle = "#fff";
+        ctx.strokeStyle = "#146c78";
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(x, y, 4, 0, Math.PI * 2);
@@ -1580,13 +1170,26 @@
         ctx.stroke();
       });
 
-      const labels = rows.length <= 5 ? rows.map((_, i) => i) : [0, Math.floor((rows.length - 1) / 2), rows.length - 1];
-      ctx.fillStyle = "#667474";
+      const labels = rows.length <= 5 ? rows.map((_, index) => index) : [0, Math.floor((rows.length - 1) / 2), rows.length - 1];
+      ctx.fillStyle = "#687577";
       ctx.textAlign = "center";
       ctx.textBaseline = "top";
-      labels.forEach((index) => ctx.fillText(formatDate(rows[index].date).replace(" ", ""), xAt(index), height - pad.bottom + 42));
-      ctx.textAlign = "left";
-      ctx.fillText("棒: 糖質 / kcal / 歩数", pad.left, height - 18);
+      labels.forEach((index) => ctx.fillText(formatDate(rows[index].date).replace(" ", ""), xAt(index), height - pad.bottom + 18));
+    }
+
+    function drawLine(ctx, points, color, width) {
+      const valid = points.filter((point) => Number.isFinite(point.y));
+      if (!valid.length) return;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      valid.forEach((point, index) => {
+        if (index === 0) ctx.moveTo(point.x, point.y);
+        else ctx.lineTo(point.x, point.y);
+      });
+      ctx.stroke();
     }
 
     function escapeHtml(value) {
@@ -1598,111 +1201,29 @@
         .replaceAll("'", "&#039;");
     }
 
-    function escapeAttr(value) {
-      return escapeHtml(value).replaceAll("`", "&#096;");
-    }
-
-    el.estimate.addEventListener("click", () => {
-      const text = el.mealText.value.trim();
-      if (!text) {
-        showToast("食べたものを入力してください");
+    el.saveWeight.addEventListener("click", () => {
+      const weight = numberOrNull(el.weight.value);
+      if (!el.weightDate.value || !weight) {
+        showToast("日付と体重を入力してください");
         return;
       }
-      state.draft = estimateMeal(text);
-      renderDraft();
-      showToast("推定しました。保存前に確認してください");
-    });
-
-    el.clearDraft.addEventListener("click", () => {
-      state.draft = [];
-      renderDraft();
-    });
-
-    el.draftPanel.addEventListener("input", (event) => {
-      const card = event.target.closest("[data-draft-index]");
-      if (!card) return;
-      const item = state.draft[Number(card.dataset.draftIndex)];
-      const field = event.target.dataset.field;
-      if (!item || !field) return;
-      item[field] = field === "name" ? event.target.value : Number(event.target.value);
-    });
-
-    el.draftPanel.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-remove-draft]");
-      if (!button) return;
-      state.draft.splice(Number(button.dataset.removeDraft), 1);
-      renderDraft();
-    });
-
-    el.saveMeal.addEventListener("click", () => {
-      if (!state.draft.length) return;
-      state.meals.push({
-        id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
-        date: todayIso(),
-        type: el.mealType.value,
-        text: el.mealText.value.trim(),
-        items: state.draft.map((item) => ({ ...item })),
-        createdAt: new Date().toISOString()
-      });
-      state.draft = [];
-      el.mealText.value = "";
-      save();
-      render();
-      showToast("食事を保存しました");
-    });
-
-    el.saveTemplates.addEventListener("click", () => {
-      state.draft.forEach((item) => {
-        if (!item.name) return;
-        state.templates[normalizeText(item.name)] = {
-          name: item.name,
-          macros: {
-            carbs: round(item.carbs),
-            protein: round(item.protein),
-            fat: round(item.fat),
-            calories: Math.round(item.calories)
-          }
-        };
-      });
-      save();
-      renderTemplates();
-      showToast("テンプレ保存しました");
-    });
-
-    el.mealList.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-delete-meal]");
-      if (!button) return;
-      state.meals = state.meals.filter((meal) => meal.id !== button.dataset.deleteMeal);
-      save();
-      render();
-      showToast("食事を削除しました");
-    });
-
-    el.templateList.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-delete-template]");
-      if (!button) return;
-      delete state.templates[button.dataset.deleteTemplate];
-      save();
-      renderTemplates();
-      showToast("テンプレを削除しました");
-    });
-
-    el.saveWeight.addEventListener("click", () => {
+      const now = new Date().toISOString();
       const entry = {
         id: `${el.weightDate.value}:${el.weightSlot.value}`,
         date: el.weightDate.value,
         slot: el.weightSlot.value,
-        weight: Number(el.weight.value),
-        steps: Number(el.steps.value) || 0,
-        createdAt: new Date().toISOString()
+        weight: round(weight),
+        note: el.note.value.trim(),
+        createdAt: now,
+        updatedAt: now
       };
-      if (!entry.date || !Number.isFinite(entry.weight)) {
-        showToast("日付と体重を入力してください");
-        return;
+      const index = state.weights.findIndex((item) => item.id === entry.id);
+      if (index >= 0) {
+        entry.createdAt = state.weights[index].createdAt || now;
+        state.weights[index] = entry;
+      } else {
+        state.weights.push(entry);
       }
-      const index = state.weights.findIndex((item) => item.date === entry.date && item.slot === entry.slot);
-      if (index >= 0) state.weights[index] = entry;
-      else state.weights.push(entry);
       state.weights.sort((a, b) => a.date.localeCompare(b.date));
       save();
       render();
@@ -1711,12 +1232,50 @@
 
     el.saveSettings.addEventListener("click", () => {
       state.settings.height = Number(el.height.value) || 174;
-      state.settings.carbGoal = Number(el.carbGoal.value) || 30;
       state.settings.startWeight = Number(el.startWeight.value) || 85;
       state.settings.goalWeight = Number(el.goalWeight.value) || 70;
+      state.settings.displaySlot = el.displaySlot.value || "morning";
       save();
       render();
       showToast("設定を保存しました");
+    });
+
+    el.recordTable.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-edit-date]");
+      if (!button) return;
+      const date = button.dataset.editDate;
+      const row = dailyRows().find((item) => item.date === date);
+      if (!row) return;
+      const preferred = row[state.settings.displaySlot] || row.morning || row.evening;
+      if (!preferred) return;
+      el.weightDate.value = preferred.date;
+      el.weightSlot.value = preferred.slot;
+      el.weight.value = preferred.weight;
+      el.note.value = preferred.note || "";
+      el.weight.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    el.weightDate.addEventListener("change", () => {
+      const id = `${el.weightDate.value}:${el.weightSlot.value}`;
+      const found = state.weights.find((entry) => entry.id === id);
+      if (!found) return;
+      el.weight.value = found.weight;
+      el.note.value = found.note || "";
+    });
+
+    el.weightSlot.addEventListener("change", () => {
+      const id = `${el.weightDate.value}:${el.weightSlot.value}`;
+      const found = state.weights.find((entry) => entry.id === id);
+      el.weight.value = found ? found.weight : "";
+      el.note.value = found ? found.note || "" : "";
+    });
+
+    document.querySelectorAll("[data-range]").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.range = button.dataset.range;
+        document.querySelectorAll("[data-range]").forEach((item) => item.classList.toggle("active", item === button));
+        drawWeightChart();
+      });
     });
 
     el.saveSync.addEventListener("click", () => {
@@ -1730,20 +1289,12 @@
     el.pullSync.addEventListener("click", pullSync);
     el.pushSync.addEventListener("click", () => pushSync(false));
 
-    document.querySelectorAll("[data-range]").forEach((button) => {
-      button.addEventListener("click", () => {
-        state.range = button.dataset.range;
-        document.querySelectorAll("[data-range]").forEach((item) => item.classList.toggle("active", item === button));
-        drawWeightChart();
-      });
-    });
-
     el.exportBtn.addEventListener("click", () => {
-      const blob = new Blob([JSON.stringify({ settings: state.settings, meals: state.meals, weights: state.weights, templates: state.templates }, null, 2)], { type: "application/json" });
+      const blob = new Blob([JSON.stringify(getAppData(), null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `keto-tracker-${todayIso()}.json`;
+      link.download = `weight-tracker-${todayIso()}.json`;
       link.click();
       URL.revokeObjectURL(url);
     });
@@ -1754,14 +1305,8 @@
       const reader = new FileReader();
       reader.onload = () => {
         try {
-          const imported = JSON.parse(String(reader.result || "{}"));
-          Object.assign(state.settings, imported.settings || {});
-          state.meals = imported.meals || [];
-          state.weights = imported.weights || [];
-          state.templates = imported.templates || {};
+          applyAppData(mergeAppData(JSON.parse(String(reader.result || "{}"))));
           save();
-          load();
-          render();
           showToast("読み込みました");
         } catch {
           showToast("JSONを読み込めませんでした");
@@ -1771,31 +1316,9 @@
       event.target.value = "";
     });
 
-    el.sampleBtn.addEventListener("click", () => {
-      const today = todayIso();
-      const yesterday = new Date(`${today}T00:00:00`);
-      yesterday.setDate(yesterday.getDate() - 1);
-      const y = yesterday.toISOString().slice(0, 10);
-      state.meals = [
-        { id: "sample-1", date: today, type: "breakfast", text: "セブンのサラダチキン、ゆで卵2個、ブラックコーヒー", items: estimateMeal("セブンのサラダチキン、ゆで卵2個、ブラックコーヒー"), createdAt: new Date().toISOString() },
-        { id: "sample-2", date: today, type: "lunch", text: "豆腐、チーズ2個、サラダ", items: estimateMeal("豆腐、チーズ2個、サラダ"), createdAt: new Date().toISOString() },
-        { id: "sample-3", date: y, type: "dinner", text: "ローソンのからあげくんレッド、無糖カフェラテ", items: estimateMeal("ローソンのからあげくんレッド、無糖カフェラテ"), createdAt: new Date(Date.now() - 86400000).toISOString() }
-      ];
-      state.weights = [
-        { id: `${y}:morning`, date: y, slot: "morning", weight: 84.4, steps: 7600, createdAt: new Date(Date.now() - 86400000).toISOString() },
-        { id: `${today}:morning`, date: today, slot: "morning", weight: 83.8, steps: 8200, createdAt: new Date().toISOString() }
-      ];
-      save();
-      render();
-      showToast("サンプルを入れました");
-    });
-
     el.clearBtn.addEventListener("click", () => {
-      if (!confirm("すべての食事・体重データを削除しますか？")) return;
-      state.meals = [];
+      if (!confirm("すべての体重データを削除しますか？")) return;
       state.weights = [];
-      state.templates = {};
-      state.draft = [];
       save();
       render();
       showToast("削除しました");
