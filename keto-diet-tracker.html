@@ -47,9 +47,10 @@
     button { cursor: pointer; }
 
     .app {
-      min-height: 100vh;
+      height: 100vh;
       display: grid;
       grid-template-columns: 300px minmax(0, 1fr);
+      overflow: hidden;
     }
 
     aside {
@@ -57,6 +58,7 @@
       top: 0;
       height: 100vh;
       overflow-y: auto;
+      overscroll-behavior: contain;
       background: rgba(255, 255, 255, 0.82);
       border-right: 1px solid var(--line);
       padding: 18px;
@@ -66,6 +68,9 @@
     }
 
     main {
+      height: 100vh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
       padding: 18px;
       display: grid;
       align-content: start;
@@ -556,12 +561,22 @@
     }
 
     @media (max-width: 1050px) {
-      .app { grid-template-columns: 1fr; }
+      .app {
+        min-height: 100vh;
+        height: auto;
+        grid-template-columns: 1fr;
+        overflow: visible;
+      }
       aside {
         position: static;
         height: auto;
+        overflow: visible;
         border-right: 0;
         border-bottom: 1px solid var(--line);
+      }
+      main {
+        height: auto;
+        overflow: visible;
       }
       .content-grid { grid-template-columns: 1fr; }
       .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
