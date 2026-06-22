@@ -2,11 +2,22 @@ const SPREADSHEET_ID = "1b5LpA47wX5r5B9sIIaUxwFD9pEi9YUZxRVP90kbQ5V8";
 const SYNC_TOKEN = "PASTE_YOUR_SYNC_KEY_HERE";
 
 const SHEETS = {
-  meta: "meta",
-  settings: "settings",
-  meals: "meals",
-  weights: "weights",
-  templates: "templates"
+  meta: "管理",
+  settings: "設定",
+  meals: "食事記録",
+  weights: "体重記録",
+  templates: "食品テンプレ"
+};
+
+const SETTING_KEYS = {
+  height: "height",
+  "身長cm": "height",
+  carbGoal: "carbGoal",
+  "糖質上限g": "carbGoal",
+  startWeight: "startWeight",
+  "開始体重kg": "startWeight",
+  goalWeight: "goalWeight",
+  "目標体重kg": "goalWeight"
 };
 
 function doGet(e) {
@@ -52,9 +63,9 @@ function saveData_(data) {
   writeWeights_(ss.getSheetByName(SHEETS.weights), data.weights || []);
   writeTemplates_(ss.getSheetByName(SHEETS.templates), data.templates || {});
   writeRows_(ss.getSheetByName(SHEETS.meta), [
-    ["key", "value"],
-    ["schemaVersion", "1"],
-    ["updatedAt", new Date().toISOString()]
+    ["項目", "値"],
+    ["形式バージョン", "1"],
+    ["最終更新", new Date().toISOString()]
   ]);
 }
 
@@ -63,18 +74,19 @@ function readSettings_(sheet) {
   const settings = { height: 174, startWeight: 85, goalWeight: 70, carbGoal: 30 };
   rows.slice(1).forEach(([key, value]) => {
     if (!key) return;
-    settings[key] = Number(value);
+    const normalizedKey = SETTING_KEYS[key] || key;
+    settings[normalizedKey] = Number(value);
   });
   return settings;
 }
 
 function writeSettings_(sheet, settings) {
   writeRows_(sheet, [
-    ["key", "value"],
-    ["height", Number(settings.height) || 174],
-    ["carbGoal", Number(settings.carbGoal) || 30],
-    ["startWeight", Number(settings.startWeight) || 85],
-    ["goalWeight", Number(settings.goalWeight) || 70]
+    ["項目", "値"],
+    ["身長cm", Number(settings.height) || 174],
+    ["糖質上限g", Number(settings.carbGoal) || 30],
+    ["開始体重kg", Number(settings.startWeight) || 85],
+    ["目標体重kg", Number(settings.goalWeight) || 70]
   ]);
 }
 
@@ -104,7 +116,7 @@ function readMeals_(sheet) {
 }
 
 function writeMeals_(sheet, meals) {
-  const rows = [["id", "date", "type", "createdAt", "sourceText", "itemId", "name", "quantity", "carbs", "protein", "fat", "calories", "confidence", "source", "needsCheck"]];
+  const rows = [["食事ID", "日付", "タイミング", "作成日時", "入力文", "食品ID", "食品名", "数量", "糖質g", "タンパク質g", "脂質g", "カロリーkcal", "推定精度", "推定元", "要確認"]];
   meals.forEach((meal) => {
     const items = Array.isArray(meal.items) ? meal.items : [];
     if (!items.length) {
@@ -147,7 +159,7 @@ function readWeights_(sheet) {
 }
 
 function writeWeights_(sheet, weights) {
-  const rows = [["id", "date", "slot", "weight", "steps", "note", "createdAt"]];
+  const rows = [["記録ID", "日付", "タイミング", "体重kg", "歩数", "メモ", "作成日時"]];
   weights.forEach((entry) => rows.push([
     entry.id,
     entry.date,
@@ -180,7 +192,7 @@ function readTemplates_(sheet) {
 }
 
 function writeTemplates_(sheet, templates) {
-  const rows = [["key", "name", "quantity", "carbs", "protein", "fat", "calories", "updatedAt"]];
+  const rows = [["キー", "食品名", "数量", "糖質g", "タンパク質g", "脂質g", "カロリーkcal", "更新日時"]];
   Object.keys(templates).forEach((key) => {
     const template = templates[key] || {};
     const macros = template.macros || {};
